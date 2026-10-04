@@ -229,6 +229,7 @@ Round the measured slope to the nearest whole % (clamped 1–4) for the verdict 
 - Title "Let your phone feel the slope". Body: "Quick Read uses motion sensors to measure tilt when your phone lies flat. Only used during a read — nothing leaves your phone."
 - Buttons "Allow motion" (green, primary) / "Not now".
 - Technical note: iOS doesn't ask permission for tilt (attitude) readings, only for step counting (Motion & Fitness), which "Walk it off" uses. So S7 shows **the first time Quick Read opens**, and "Allow motion" triggers the Motion & Fitness system prompt. "Not now" still allows reading slope; only "Walk it off" stays unavailable until permission is given.
+- **S6 camera primer (from your screenshot):** striped preview panel labelled "PREVIEW · AR LINE ON GREEN", title "Let Scan see the green", body "The camera maps slope in 3D. Nothing is recorded or uploaded.", buttons "Allow camera" (green) / "Use Quick Read instead". Shown the first time Scan opens. Quick Read's tap-to-measure goes straight to the system camera prompt, since S6's wording is about Scan; "Enter manually" always works without it.
 - Your screenshot shows S7, and S6 with a green "Allow camera" button, neither of which is in the zip I have. **If there's a newer design pack, please upload it** so I build from the latest version.
 
 **Q10. Pace length and Stimp ✅** Simple ± steppers: pace 2.0–3.5 ft (default 2.7), Stimp 6–14.
