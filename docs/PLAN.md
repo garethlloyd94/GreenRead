@@ -5,7 +5,7 @@
 **Frameworks:** SwiftUI · SwiftData · CoreMotion · ARKit/RealityKit · AVAudioEngine · Core Haptics · WebKit (YouTube player only).
 **Source of truth:** `design_handoff_putting_app/` — README spec, then `prototype/Putting App Prototype.dc.html`, then `reference/Putting App Design Pack.html` for screens the prototype covers lightly.
 
-Status: **REVISION 2 — awaiting final sign-off.** Your answers are folded in. Two items remain in section 9 (Q3, Q11), plus confirmation of the researched formulas (Q1, Q2).
+Status: **REVISION 3 — all decisions made.** Designs: design pack 3 (`User_flow_and_screen_options_3.zip`). Visual version with every screen: https://claude.ai/artifact/2qBkK3YWoEtsbH4pab11FR
 
 ---
 
@@ -106,7 +106,7 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 | 2 | Home — Play tiles | Prototype / Nd |
 | 3 | Home — Drills feed + chips | Prototype / 12a list rows |
 | 4 | Settings sheet | Prototype + design pack Settings |
-| 5 | Camera / motion permission primers | S6, S7 |
+| 5 | Camera / motion permission primers (+ motion denied state) | S6, S7 (design pack 3) |
 | 6 | Modal chrome: ✕, tool-name switcher pill, Read \| Train | Prototype / M2 |
 | 7 | QR Measure: AR tap · Walk it off · Enter manually | Prototype, Q1–Q3 |
 | 8 | QR Lay flat: orange/green full-screen state | Prototype / 4c |
@@ -190,28 +190,16 @@ App icon (Icon A, all sizes), launch screen, VoiceOver labels, Dynamic Type sani
 
 ## 9. Decisions
 
-Legend: ✅ decided · ❓ still needs your answer
+All 13 questions are decided.
 
-**Q1. "Plays like" distance ✅ (proposed from research, please confirm)**
-Putting coaches use the rule of thumb *extra feet per 10 ft of putt = slope % × Stimp ÷ 10* (for example, a 2% uphill on a Stimp 9 green adds about 1.8 ft per 10 ft). That gives:
-```
-playsLike = feet × (1 + uphill% × stimp / 100)     // downhill: uphill% is negative
-clamp to ≥ 1 ft, round to whole feet (0.1 m when in metres)
-```
-Check against the designs at Stimp 10 (Medium): 15 ft at 1.2% uphill → 16.8 → **17 ft** ✓.
-Stimp comes from the Scan green-speed sheet, or from **Default green speed** in Settings for Quick Read (so that setting matters in Quick Read too). Simple physics models give a somewhat bigger uphill effect than this rule. It's a display figure that can be tuned after field testing.
+**Q1. "Plays like" distance ✅**
+`playsLike = max(1, round(feet × (1 + uphill% × stimp / 100)))`, shorter when downhill (coaches' rule: extra feet per 10 ft = slope % × Stimp ÷ 10). At Medium: 15 ft at 1.2% uphill → 17 ft, matching the designs. Quick Read uses the Default green speed from Settings. Tune after field testing.
 
-**Q2. Scan aim and green speed ✅ (proposed from research, please confirm)**
-Green-reading sources agree that **faster greens break more**: the ball rolls more slowly for longer, so gravity has more time to act. AimPoint, for example, assumes Stimp ~10 and moves the aim out for faster greens and in for slower ones. So:
-- Scan measures average uphill % and side % along the ball→hole corridor from the LiDAR mesh, then applies the **same Tour Read sum** as Quick Read (which keeps the S3 promise of "the same aim number").
-- The aim is then scaled by green speed: `aim × stimp / 10` → Slow (8) ×0.8, Medium (10) ×1.0, Fast (12) ×1.2. This is linear and conservative; real-world examples are steeper still, for example 6 in at Stimp 8 vs 14 in at Stimp 12.
-- **Quick Read uses the same scaling with the Default green speed** (default Medium = ×1.0), so the README test case still gives 16in R.
-- The curved line is drawn on the scanned surface as a smooth arc from the ball, starting toward the aim point and curling into the hole. It's a visual of the aim, not a ball-roll simulation (that could come later).
+**Q2. Scan aim and green speed ✅**
+Scan reads average uphill % and side % along the ball→hole corridor from the LiDAR mesh and applies the same Tour Read sum as Quick Read, then scales by `stimp / 10` (Slow ×0.8, Medium ×1.0, Fast ×1.2). Quick Read uses the same scaling, so Medium still gives 16in R. The curved line visualises that aim; no ball-roll simulation in v1.
 
-**Q3. "Aimed" in Lay flat ❓**
-On the Lay flat screen, "Aimed" means the phone's **top edge points at the hole**. The phone's sensors can tell when it's **flat** and **still**, but not where the hole is. Options:
-- **A (recommended for MVP):** trust the golfer. The screen says "TOP EDGE → HOLE". Once the phone is flat and has been held still for about 1 s, Flat ✓ and Aimed ✓ both tick, it turns green and reads. Simple and reliable.
-- **B:** a compass check. If the distance was measured with the camera tap, we know the hole's direction and compare it with the phone's compass heading, showing orange "↻ turn" until it's within ~10°. Phone compasses near the ground (magnetic cases, buggies, sprinkler pipes) can be off by more than that, so it may annoy more than help. Possible as a later upgrade.
+**Q3. "Aimed" in Lay flat ✅ — option A**
+Trust the golfer: "TOP EDGE → HOLE" is shown; once the phone is flat and held still for ~1 s, Flat ✓ and Aimed ✓ tick, the screen turns green and reads. Compass check possibly later.
 
 **Q4. Train scoring ✅**
 Round the measured slope to the nearest whole % (clamped 1–4) for the verdict and points; display the true decimal. Side slope under 0.5% = "Straight"; uphill under 0.5% = "Flat". Hill and aim are shown but not scored.
@@ -224,18 +212,17 @@ Round the measured slope to the nearest whole % (clamped 1–4) for the verdict 
 
 **Q8. Tempo ✅** Metronome only for MVP: pendulum, BACK/THROUGH labels, BPM 60–100 ± (default 76), Start/Stop, distinct sounds, haptics. Drill and Session are deferred.
 
-**Q9. Motion permission primer ✅ — screen S7 (from your updated design pack)**
-- Illustration: green panel with a black phone and a lime ▲, label "PHONE LYING FLAT ON GREEN".
-- Title "Let your phone feel the slope". Body: "Quick Read uses motion sensors to measure tilt when your phone lies flat. Only used during a read — nothing leaves your phone."
-- Buttons "Allow motion" (green, primary) / "Not now".
-- Technical note: iOS doesn't ask permission for tilt (attitude) readings, only for step counting (Motion & Fitness), which "Walk it off" uses. So S7 shows **the first time Quick Read opens**, and "Allow motion" triggers the Motion & Fitness system prompt. "Not now" still allows reading slope; only "Walk it off" stays unavailable until permission is given.
-- **S6 camera primer (from your screenshot):** striped preview panel labelled "PREVIEW · AR LINE ON GREEN", title "Let Scan see the green", body "The camera maps slope in 3D. Nothing is recorded or uploaded.", buttons "Allow camera" (green) / "Use Quick Read instead". Shown the first time Scan opens. Quick Read's tap-to-measure goes straight to the system camera prompt, since S6's wording is about Scan; "Enter manually" always works without it.
-- Your screenshot shows S7, and S6 with a green "Allow camera" button, neither of which is in the zip I have. **If there's a newer design pack, please upload it** so I build from the latest version.
+**Q9. Permission primers ✅ — S6 and S7 as in design pack 3**
+- **S6 camera:** "Let Scan see the green" / "The camera maps slope in 3D. Nothing is recorded or uploaded." / "Allow camera" · "Use Quick Read instead". First time Scan opens, then the system prompt. Quick Read's tap-to-measure goes straight to the system prompt; "Enter manually" always works.
+- **S7 motion:** green card (220pt, radius 24) with phone lying flat and a lime triangle. "Let your phone feel the slope" / "Quick Read uses motion sensors to measure tilt when your phone lies flat. Only used during a read — nothing leaves your phone." / "Allow motion" (system prompt) · "Not now" (closes Quick Read back to Play). First Quick Read only.
+- **Denied later:** Quick Read opens on the same screen with primary "Open Settings" and body "Motion access is off. Turn it on in Settings to use Quick Read."
+- **Info.plist:** `NSCameraUsageDescription` "GreenRead uses the camera to map the green and show your putting line."; `NSMotionUsageDescription` "GreenRead measures the slope of the green when your phone lies flat."
+- Technical note: tilt readings need no iOS permission; "Allow motion" uses the Motion & Fitness authorisation (also used by Walk it off), and its status drives the denied state.
 
 **Q10. Pace length and Stimp ✅** Simple ± steppers: pace 2.0–3.5 ft (default 2.7), Stimp 6–14.
 
-**Q11. Stats trend chart ❓**
-I'd left it out because the chosen Stats design (9a) has no chart. Only an alternative option (9b) shows one, so I'd be adapting its style. On reflection, though, the Home "Stats" tile already shows an accuracy figure ("71%"), so we need an accuracy number regardless (average round score over recent rounds). With that in place, a small trend chart (Swift Charts, accuracy over the last 7 rounds, styled like 9b) is cheap to add under the insight card. **Include it: yes or no?**
+**Q11. Stats trend chart ✅ — yes**
+Accuracy = average round score over recent rounds (the figure on the Home Stats tile). Swift Charts line of the last 7 rounds, styled like 9b, under the 9a insight card.
 
 **Q12. Repo and workflow ✅**
 Bundle ID `com.garethlloyd.greenread`; no Mac CI build; one branch + PR per milestone; commit the generated `.xcodeproj` alongside `project.yml` so it opens directly in Xcode.
@@ -250,4 +237,4 @@ iPad, landscape, Apple Watch, Tempo backswing drill and practice session (10/11,
 
 ---
 
-**Next step:** confirm Q1 and Q2, answer Q3 and Q11, and upload a newer design pack if one exists. I'll then start M0 + M1 on branch `m0-m1-foundation` and open a PR for you to review in Xcode.
+**Next step:** M0 + M1 (project skeleton and design system) on branch `m0-m1-foundation`, with a PR for review.
