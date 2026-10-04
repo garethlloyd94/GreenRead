@@ -33,7 +33,7 @@ Onboarding follows option **1b**: a single-page tour ("Four tools. Find the line
 
 ```
 GreenRead/                         ← repo root
-├─ project.yml                     ← XcodeGen spec (generates GreenRead.xcodeproj)
+├─ GreenRead.xcodeproj            ← hand-written; GreenRead/ is a folder-synchronised group
 ├─ GreenRead/                      ← app target
 │  ├─ App/                         GreenReadApp, RootView, AppState (router)
 │  ├─ DesignSystem/                Tokens (Color/Font/Radius/Shadow/Motion), components
@@ -64,7 +64,7 @@ GreenRead/                         ← repo root
 - **Persistence (SwiftData):** `UserSettings`, `SavedVideo`, `TrainRound` → `TrainPutt[]`, `SavedRead` (Quick Read or Scan result). Settings could use `@AppStorage`; I'll use SwiftData for everything except the onboarding-seen flag.
 - **No backend, no account, no analytics.** Fully offline except YouTube playback. The S6 copy promises "Nothing is recorded or uploaded."
 - **Fonts:** Archivo (variable, with a width axis) and JetBrains Mono, both under the OFL licence and bundled. Archivo's width (110–120%) is applied through `UIFontDescriptor` variation axes, wrapped in a `Font.archivo(size:weight:width:)` helper.
-- **Project generation:** XcodeGen, so the project file is readable text and merges cleanly. You run `xcodegen` once on your Mac (or I commit the generated `.xcodeproj` too; see question Q12).
+- **Project file:** a small hand-written `.xcodeproj` using Xcode 16 folder-synchronised groups, so every file under `GreenRead/` is included automatically and the project file rarely changes. (XcodeGen was the original plan, but it can't be installed in the cloud environment; this needs no extra tools on your Mac either.)
 
 ---
 
@@ -131,7 +131,7 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 Each milestone ends with a commit on a feature branch and a short note on what to check in Xcode or the Simulator.
 
 **M0 — Project skeleton**
-XcodeGen project, app and `GreenReadCore` targets, SwiftData container, bundled fonts, copy of the design handoff in `docs/design/`, CI-free `swift test` for Core, `.gitignore`, README describing how to build.
+Xcode project (folder-synchronised), app target and local `GreenReadCore` package (Tour Read maths, units and formatting pulled forward from M3 so the tests exist from day one), SwiftData container, bundled fonts, copy of the design handoff in `docs/design/`, CI-free `swift test` for Core, `.gitignore`, README describing how to build.
 
 **M1 — Design system**
 Colour/type/radius/shadow/motion tokens; `GreenReadWordmark` (text, not an image); components: `PillButton` (go, neutral, secondary), `Chip`, `PillSegmentedControl`, `ResultCard`, `BottomCard`, `CircleIconButton`, `MonoLabel`, `VerdictBanner`, `DivergingBar`, `VideoRow`. Includes a DEBUG-only component gallery screen for checking against the design pack.
@@ -225,9 +225,17 @@ Round the measured slope to the nearest whole % (clamped 1–4) for the verdict 
 Accuracy = average round score over recent rounds (the figure on the Home Stats tile). Swift Charts line of the last 7 rounds, styled like 9b, under the 9a insight card.
 
 **Q12. Repo and workflow ✅**
-Bundle ID `com.garethlloyd.greenread`; no Mac CI build; one branch + PR per milestone; commit the generated `.xcodeproj` alongside `project.yml` so it opens directly in Xcode.
+Bundle ID `com.garethlloyd.greenread`; no Mac CI build; one branch + PR per milestone; the `.xcodeproj` is committed so it opens directly in Xcode (requires Xcode 16+).
 
 **Q13. Units ✅** Feet by default, metres in Settings.
+
+**Q14. Sounds toggle ✅** Settings has both Sounds and Haptics switches (as in the design pack), so the metronome can run on vibration only.
+
+**Q15. High-contrast mode (S5) ✅** In strong sun, Scan overlays get heavier (thicker break line, larger markers) and the result card is fully opaque. Nothing else changes.
+
+**Q16. Stats insight wording ✅** Templated on the two designed examples: "You under-read / over-read {group} putts by about {n}%" for the group furthest off, "Your {group} reads are improving" when a group's error shrinks over recent rounds, and "Your reads are well balanced" when everything is close.
+
+**Interpretation noted during M0:** Read mode uses the side slope rounded to the nearest whole % in the Tour Read sum (as design 5a does: 2.1% shown, "× 2% slope" in the working), with the true decimal shown on the card.
 
 ---
 
@@ -237,4 +245,4 @@ iPad, landscape, Apple Watch, Tempo backswing drill and practice session (10/11,
 
 ---
 
-**Next step:** M0 + M1 (project skeleton and design system) on branch `m0-m1-foundation`, with a PR for review.
+**Status:** M0 + M1 in progress on branch `m0-m1-foundation`.

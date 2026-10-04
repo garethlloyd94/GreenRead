@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>body{margin:0;background:#E9EBE5;font-family:Archivo,sans-serif;color:#0E1411}a{color:#1E9E5A}a:hover{color:#147A43}@keyframes up{from{transform:translateY(100%)}to{transform:none}}@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06)}100%{transform:none;opacity:1}}</style></helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:48px;padding:32px;box-sizing:border-box;flex-wrap:wrap">
+<div style="width:406px;height:836px;flex-shrink:0;border-radius:58px;background:#0E1411;padding:8px;box-sizing:border-box;box-shadow:0 30px 60px rgba(14,20,17,.25)">
+<div style="position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#F5F6F2;user-select:none">
+
+<sc-if value="{{ showHome }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding-top:50px;overflow:auto">
+<div style="padding:6px 20px 12px;display:flex;flex-direction:column;gap:2px"><span style="font:800 30px/1 Archivo;font-stretch:118%;letter-spacing:-.03em;color:#0E1411">Green<span style="color:#1E9E5A">Read</span></span><span style="font:600 11px 'JetBrains Mono';letter-spacing:.1em;color:#5B635D">FIND THE LINE</span></div>
+<div style="padding:4px 18px 0;display:flex;gap:10px;align-items:center">
+<div style="flex:1;height:46px;border-radius:23px;background:#E3E6DE;display:grid;grid-template-columns:1fr 1fr;padding:4px;box-sizing:border-box;font:800 15px Archivo">
+<div onClick="{{ tabPlay }}" style="border-radius:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ playTabBg }};color:{{ playTabFg }}">Play</div>
+<div onClick="{{ tabDrills }}" style="border-radius:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ drillsTabBg }};color:{{ drillsTabFg }}">Drills</div>
+</div>
+<div onClick="{{ openSettings }}" style="width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 19px Archivo;cursor:pointer">⚙</div>
+</div>
+
+<sc-if value="{{ isPlay }}" hint-placeholder-val="{{ true }}">
+<div style="padding:18px 18px 24px;display:flex;flex-direction:column;gap:12px">
+<div onClick="{{ openScan }}" style="height:132px;border-radius:26px;background:#1E9E5A;color:#fff;padding:0 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div><div style="font:800 26px Archivo">Scan</div><div style="font:500 14px Archivo">AR putt line on the green</div></div><span style="font:800 26px Archivo">›</span></div>
+<div onClick="{{ openQr }}" style="height:132px;border-radius:26px;background:#fff;padding:0 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div><div style="font:800 26px Archivo">Quick Read</div><div style="font:500 14px Archivo;color:#5B635D">Phone flat · Read or Train</div></div><span style="font:800 26px Archivo">›</span></div>
+<div onClick="{{ openTempo }}" style="height:112px;border-radius:26px;background:#fff;padding:0 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div><div style="font:800 24px Archivo">Tempo</div><div style="font:500 14px Archivo;color:#5B635D">{{ tempoSub }}</div></div><span style="font:800 26px Archivo">›</span></div>
+<div onClick="{{ openStats }}" style="height:76px;border-radius:26px;background:#fff;padding:0 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font:800 19px Archivo">Stats<span style="font:700 14px Archivo;color:#1E9E5A">{{ statsHint }} ›</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDrills }}" hint-placeholder-val="{{ false }}">
+<div style="padding:14px 0 24px;display:flex;flex-direction:column;gap:12px">
+<div style="padding:0 18px;display:flex;gap:6px;overflow-x:auto">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="5"><div onClick="{{ c.pick }}" style="flex-shrink:0;border-radius:18px;padding:10px 14px;font:700 13px Archivo;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</div></sc-for>
+</div>
+<sc-for list="{{ videos }}" as="v" hint-placeholder-count="4">
+<div style="margin:0 18px;background:#fff;border-radius:22px;padding:10px;display:flex;gap:12px;align-items:center">
+<div onClick="{{ v.open }}" style="width:120px;height:76px;flex-shrink:0;border-radius:14px;background:repeating-linear-gradient(135deg,#DDE5D8 0 8px,#E5ECE1 8px 16px);position:relative;cursor:pointer"><span style="position:absolute;right:6px;bottom:6px;background:#0E1411;color:#fff;border-radius:6px;padding:1px 6px;font:700 11px Archivo">{{ v.dur }}</span></div>
+<div onClick="{{ v.open }}" style="flex:1;cursor:pointer"><div style="font:700 15px/1.2 Archivo">{{ v.t }}</div><div style="font:500 12px Archivo;color:#5B635D;margin-top:4px">{{ v.by }} · {{ v.c }}</div></div>
+<div onClick="{{ v.toggle }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font:700 22px Archivo;cursor:pointer;color:{{ v.heartColor }}">{{ v.heart }}</div>
+</div>
+</sc-for>
+<sc-if value="{{ noVideos }}" hint-placeholder-val="{{ false }}"><div style="margin:30px 18px;text-align:center;font:600 15px Archivo;color:#5B635D">Nothing saved yet — tap ♡ on any video.</div></sc-if>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding-top:50px;display:flex;flex-direction:column;animation:fade .25s">
+<div style="padding:4px 18px 0;display:flex;align-items:center;gap:10px"><div onClick="{{ back }}" style="width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 20px Archivo;cursor:pointer">‹</div><div style="font:800 26px Archivo">Stats</div></div>
+<sc-if value="{{ statsLocked }}" hint-placeholder-val="{{ true }}">
+<div style="margin:18px;background:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:8px"><sc-for list="{{ unlockBars }}" as="b" hint-placeholder-count="3"><div style="flex:1;height:10px;border-radius:5px;background:{{ b.bg }}"></div></sc-for></div>
+<div style="font:800 24px/1.1 Archivo">Play 3 rounds to unlock your insights</div>
+<div style="font:400 14px/1.45 Archivo;color:#5B635D">{{ roundsText }}</div>
+<div onClick="{{ startTrain }}" style="height:54px;border-radius:27px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Play a Train round</div>
+</div>
+</sc-if>
+<sc-if value="{{ statsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+<div style="background:#0E1411;color:#fff;border-radius:24px;padding:18px"><div style="font:600 11px 'JetBrains Mono';color:#D4F53C">INSIGHT · {{ rounds }} ROUNDS</div><div style="margin-top:6px;font:800 21px/1.2 Archivo">{{ insight }}</div></div>
+<div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;font:600 10px 'JetBrains Mono';color:#5B635D"><span>◀ UNDER</span><span>OVER ▶</span></div>
+<sc-for list="{{ breakdown }}" as="r" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:70px 1fr;gap:8px;align-items:center;font:600 13px Archivo"><span>{{ r.label }}</span><div style="position:relative;height:14px"><div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:#0E1411"></div><div style="position:absolute;height:100%;border-radius:7px;left:{{ r.left }};width:{{ r.width }};background:{{ r.color }}"></div></div></div></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPlayer }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding-top:50px;display:flex;flex-direction:column;animation:fade .25s">
+<div style="padding:4px 18px 10px;display:flex;align-items:center"><div onClick="{{ back }}" style="width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 20px Archivo;cursor:pointer">‹</div></div>
+<div style="height:220px;background:repeating-linear-gradient(135deg,#2A322D 0 10px,#323B35 10px 20px);display:flex;align-items:center;justify-content:center;position:relative"><div style="width:64px;height:64px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 22px Archivo">▶</div><div style="position:absolute;left:12px;top:10px;font:500 10px 'JetBrains Mono';color:#8A918B">YOUTUBE EMBED</div></div>
+<div style="padding:18px 18px 0;font:800 22px/1.15 Archivo">{{ video.t }}</div>
+<div style="padding:6px 18px 0;font:600 14px Archivo;color:#5B635D">{{ video.by }} · {{ video.dur }} · {{ video.c }}</div>
+<div style="padding:16px 18px 0;display:flex;gap:8px"><div onClick="{{ video.toggle }}" style="flex:1;height:52px;border-radius:26px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px Archivo;cursor:pointer">{{ video.saveLabel }}</div><div onClick="{{ openTempo }}" style="flex:1;height:52px;border-radius:26px;background:#E3E6DE;display:flex;align-items:center;justify-content:center;font:700 15px Archivo;cursor:pointer">Start tempo</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isModal }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#0E1411;animation:up .32s ease-out;z-index:10">
+
+<sc-if value="{{ isScanMark }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ tapCam }}" style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#3E5A44 0 12px,#466349 12px 24px);cursor:crosshair">
+<div style="position:absolute;left:24px;top:170px;font:500 10px 'JetBrains Mono';color:#CFE0D2">LIVE CAMERA · TAP TO PLACE</div>
+<sc-if value="{{ ballPlaced }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:176px;top:560px;display:flex;flex-direction:column;align-items:center;animation:pop .3s"><div style="background:#fff;border-radius:8px;padding:2px 8px;font:800 11px Archivo">BALL</div><div style="width:3px;height:30px;background:#fff"></div><div style="width:20px;height:20px;border-radius:50%;background:#fff"></div></div></sc-if>
+<sc-if value="{{ holePlaced }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:180px;top:250px;display:flex;flex-direction:column;align-items:center;animation:pop .3s"><div style="background:#D4F53C;border-radius:8px;padding:2px 8px;font:800 11px Archivo">HOLE</div><div style="width:3px;height:30px;background:#D4F53C"></div><div style="width:30px;height:14px;border-radius:50%;background:#0E1411;border:2px solid #fff"></div></div></sc-if>
+</div>
+<div style="position:absolute;top:166px;left:0;right:0;display:flex;justify-content:center;pointer-events:none"><div style="background:#fff;border-radius:24px;padding:12px 18px;font:800 17px Archivo">{{ markPrompt }}</div></div>
+<div style="position:absolute;bottom:34px;left:18px;right:18px;display:flex;gap:10px">
+<div onClick="{{ undoTap }}" style="flex:1;height:58px;border-radius:29px;background:rgba(14,20,17,.7);color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Undo</div>
+<sc-if value="{{ canStartScan }}" hint-placeholder-val="{{ false }}"><div onClick="{{ startScan }}" style="flex:2;height:58px;border-radius:29px;background:#D4F53C;display:flex;align-items:center;justify-content:center;font:800 16px Archivo;cursor:pointer;animation:pop .3s">Start scan</div></sc-if>
+<sc-if value="{{ cantStartScan }}" hint-placeholder-val="{{ true }}"><div style="flex:2;height:58px;border-radius:29px;background:rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px Archivo">Mark ball & hole</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScanning }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#3E5A44 0 12px,#466349 12px 24px)">
+<div style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);border-radius:48% 44% 40% 52%;background:rgba(212,245,60,.38);border:2px solid #D4F53C;transition:width .1s,height .1s;width:{{ scanBlob }};height:{{ scanBlob }}"></div>
+<div style="position:absolute;right:18px;top:110px;width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:{{ scanRing }}"><div style="width:62px;height:62px;border-radius:50%;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:800 18px Archivo">{{ scanPctText }}</div></div>
+<div style="position:absolute;bottom:40px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="background:#fff;border-radius:30px;padding:16px 24px;font:800 22px Archivo;display:flex;gap:10px;align-items:center"><span style="width:11px;height:11px;border-radius:50%;background:#D9622B"></span>{{ scanPrompt }}</div><div style="font:600 13px Archivo;color:#fff">Keep the green in frame</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSpeed }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#3E5A44 0 12px,#466349 12px 24px)">
+<div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:32px 32px 0 0;padding:24px 18px 34px;display:flex;flex-direction:column;gap:14px;animation:up .3s ease-out">
+<div style="font:800 26px Archivo">How fast is the green?</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+<sc-for list="{{ speeds }}" as="sp" hint-placeholder-count="3"><div onClick="{{ sp.pick }}" style="height:80px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 17px Archivo;cursor:pointer;border:1.5px solid #DADDD5;background:{{ sp.bg }};color:{{ sp.fg }}">{{ sp.label }}<span style="font:600 11px Archivo;opacity:.7">{{ sp.stimp }}</span></div></sc-for>
+</div>
+<div onClick="{{ showLine }}" style="height:58px;border-radius:29px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 17px Archivo;cursor:pointer">Show my line</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScanResult }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#3E5A44 0 12px,#466349 12px 24px)">
+<svg width="390" height="820" style="position:absolute;inset:0"><path d="M195 520 L125 200" stroke="#fff" stroke-width="3" stroke-dasharray="9 8" fill="none"></path><path d="M195 520 C150 400 156 270 212 204" stroke="#D4F53C" stroke-width="7" fill="none" stroke-linecap="round"></path><circle cx="195" cy="522" r="11" fill="#fff"></circle><ellipse cx="214" cy="202" rx="16" ry="7" fill="#0E1411" stroke="#fff" stroke-width="2"></ellipse><circle cx="125" cy="198" r="11" fill="none" stroke="#fff" stroke-width="3.5"></circle></svg>
+<div style="position:absolute;left:84px;top:166px;background:#fff;border-radius:10px;padding:4px 9px;font:800 12px Archivo">AIM {{ scanAim }} L</div>
+<div style="position:absolute;left:14px;right:14px;bottom:18px;background:#fff;border-radius:30px;padding:18px;display:flex;flex-direction:column;gap:16px;animation:up .35s ease-out">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+<div><div style="font:600 10px 'JetBrains Mono';color:#5B635D">ACTUAL</div><div style="font:800 26px Archivo">{{ scanDist }}</div></div>
+<div><div style="font:600 10px 'JetBrains Mono';color:#5B635D">PLAYS</div><div style="font:800 26px Archivo">{{ scanPlays }}</div><div style="font:600 12px Archivo;color:#D9622B">▲ uphill</div></div>
+<div><div style="font:600 10px 'JetBrains Mono';color:#5B635D">AIM</div><div style="font:800 26px Archivo;color:#1E9E5A">{{ scanAim }} L</div><div style="font:600 12px Archivo;color:#5B635D">breaks R</div></div>
+</div>
+<div style="display:flex;gap:8px"><div onClick="{{ rescan }}" style="flex:1;height:54px;border-radius:27px;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Rescan</div><div onClick="{{ saveClose }}" style="flex:1;height:54px;border-radius:27px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Save</div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMeasure }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ tapCam }}" style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#3E5A44 0 12px,#466349 12px 24px);cursor:crosshair">
+<div style="position:absolute;left:24px;top:220px;font:500 10px 'JetBrains Mono';color:#CFE0D2">LIVE CAMERA · TAP BALL, THEN HOLE</div>
+<sc-if value="{{ ballPlaced }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:184px;top:470px;width:20px;height:20px;border-radius:50%;background:#fff;animation:pop .3s"></div></sc-if>
+<sc-if value="{{ holePlaced }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:186px;top:250px;width:32px;height:14px;border-radius:50%;background:#0E1411;border:2px solid #fff;animation:pop .3s"></div><div style="position:absolute;left:200px;top:266px;width:0;height:204px;border-left:3px dashed #fff"></div><div style="position:absolute;left:214px;top:350px;background:#fff;border-radius:14px;padding:6px 12px;font:800 22px Archivo">{{ measureDist }}</div></sc-if>
+</div>
+<sc-if value="{{ isTrain }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:172px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none"><sc-for list="{{ trainDots }}" as="dt" hint-placeholder-count="5"><span style="width:10px;height:10px;border-radius:50%;background:{{ dt.bg }}"></span></sc-for></div></sc-if>
+<div style="position:absolute;left:14px;right:14px;bottom:18px;background:#fff;border-radius:30px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font:600 10px 'JetBrains Mono';color:#5B635D">{{ measureTitle }}</div><sc-if value="{{ measured }}" hint-placeholder-val="{{ false }}"><div style="font:800 36px Archivo">{{ measureDist }}</div></sc-if><sc-if value="{{ notMeasured }}" hint-placeholder-val="{{ true }}"><div style="font:800 22px Archivo;padding-top:4px">{{ measurePrompt }}</div></sc-if></div>
+<sc-if value="{{ manualOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><div onClick="{{ distDown }}" style="width:48px;height:48px;border-radius:50%;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 22px Archivo;cursor:pointer">−</div><div onClick="{{ distUp }}" style="width:48px;height:48px;border-radius:50%;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 22px Archivo;cursor:pointer">+</div></div></sc-if>
+</div>
+<sc-if value="{{ trainHidden }}" hint-placeholder-val="{{ false }}"><div style="font:600 13px Archivo;color:#5B635D">Measure the putt, then make your read before the phone does.</div></sc-if>
+<sc-if value="{{ isMeasureRead }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:16px;font:700 14px Archivo;color:#1E9E5A"><span onClick="{{ toggleManual }}" style="cursor:pointer">{{ manualLabel }}</span><span style="color:#8A918B">Walk it off</span></div></sc-if>
+<sc-if value="{{ measured }}" hint-placeholder-val="{{ false }}"><div onClick="{{ measureNext }}" style="height:56px;border-radius:28px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">{{ measureNextLabel }}</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGuess }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding:170px 18px 0;display:flex;flex-direction:column;gap:16px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font:800 24px Archivo">Your read · {{ measureDist }}</div><div style="display:flex;gap:5px"><sc-for list="{{ trainDotsLight }}" as="dt" hint-placeholder-count="5"><span style="width:10px;height:10px;border-radius:50%;background:{{ dt.bg }}"></span></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="font:600 11px 'JetBrains Mono';color:#5B635D">SLOPE</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px"><sc-for list="{{ slopeChips }}" as="ch" hint-placeholder-count="4"><div onClick="{{ ch.pick }}" style="height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:800 17px Archivo;cursor:pointer;background:{{ ch.bg }};color:{{ ch.fg }}">{{ ch.label }}</div></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="font:600 11px 'JetBrains Mono';color:#5B635D">BREAK</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px"><sc-for list="{{ dirChips }}" as="ch" hint-placeholder-count="3"><div onClick="{{ ch.pick }}" style="height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:800 15px Archivo;cursor:pointer;background:{{ ch.bg }};color:{{ ch.fg }}">{{ ch.label }}</div></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="font:600 11px 'JetBrains Mono';color:#5B635D">HILL</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px"><sc-for list="{{ hillChips }}" as="ch" hint-placeholder-count="3"><div onClick="{{ ch.pick }}" style="height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:800 15px Archivo;cursor:pointer;background:{{ ch.bg }};color:{{ ch.fg }}">{{ ch.label }}</div></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="font:600 11px 'JetBrains Mono';color:#5B635D">{{ aimLabel }}</div><div style="height:58px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 7px"><div onClick="{{ aimDown }}" style="width:46px;height:46px;border-radius:12px;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 20px Archivo;cursor:pointer">−</div><div style="font:800 22px Archivo">{{ guessAim }}</div><div onClick="{{ aimUp }}" style="width:46px;height:46px;border-radius:12px;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 20px Archivo;cursor:pointer">+</div></div></div>
+<div style="margin-top:auto;padding-bottom:30px">
+<sc-if value="{{ canLock }}" hint-placeholder-val="{{ false }}"><div onClick="{{ lock }}" style="height:58px;border-radius:29px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 17px Archivo;cursor:pointer">Lock in & lay phone</div></sc-if>
+<sc-if value="{{ cantLock }}" hint-placeholder-val="{{ true }}"><div style="height:58px;border-radius:29px;background:#DADDD5;color:#5B635D;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Pick slope, break & hill</div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFlat }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;color:#fff;display:flex;flex-direction:column;align-items:center;padding-top:180px;box-sizing:border-box;transition:background .4s;background:{{ flatBg }}">
+<div style="width:0;height:0;border-left:62px solid transparent;border-right:62px solid transparent;border-bottom:88px solid #fff"></div>
+<div style="margin-top:14px;font:800 15px 'JetBrains Mono';letter-spacing:.1em">TOP EDGE → HOLE</div>
+<div style="margin-top:36px;display:flex;flex-direction:column;gap:12px;width:250px">
+<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.18);border-radius:22px;padding:18px 20px;font:800 24px Archivo">Flat<span>✓</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.18);border-radius:22px;padding:18px 20px;font:800 24px Archivo">Aimed<span>{{ aimedText }}</span></div>
+</div>
+<sc-if value="{{ showLive }}" hint-placeholder-val="{{ false }}"><div style="margin-top:16px;display:flex;gap:10px;animation:fade .3s"><div style="background:#fff;color:#0E1411;border-radius:16px;padding:10px 14px;text-align:center"><div style="font:600 10px 'JetBrains Mono';color:#5B635D">UPHILL</div><div style="font:800 22px Archivo">1.2%</div></div><div style="background:#fff;color:#0E1411;border-radius:16px;padding:10px 14px;text-align:center"><div style="font:600 10px 'JetBrains Mono';color:#5B635D">SIDE · R→L</div><div style="font:800 22px Archivo">2.1%</div></div></div></sc-if>
+<sc-if value="{{ trainHidden }}" hint-placeholder-val="{{ false }}"><div style="margin-top:16px;font:700 14px Archivo">Your guess is locked · no peeking</div></sc-if>
+<div style="margin-top:auto;margin-bottom:44px;font:800 30px Archivo;font-stretch:115%">{{ flatTitle }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isQrResult }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding:170px 16px 0;display:flex;flex-direction:column;gap:10px;box-sizing:border-box;animation:fade .3s">
+<div style="background:#fff;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font:600 11px 'JetBrains Mono';color:#5B635D">AIM</div><div style="font:800 56px/1 Archivo;font-stretch:115%;color:#1E9E5A;animation:pop .4s">{{ qrAim }} R</div></div><div style="font:700 13px Archivo;color:#5B635D;text-align:right">breaks<br>R → L</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font:600 10px 'JetBrains Mono';color:#5B635D"><div>ACTUAL<div style="font:800 20px Archivo;color:#0E1411">{{ qrDist }}</div></div><div>PLAYS ▲<div style="font:800 20px Archivo;color:#0E1411">{{ qrPlays }}</div></div><div>SLOPE<div style="font:800 20px Archivo;color:#0E1411">2.1%</div></div></div>
+</div>
+<div style="background:#fff;border-radius:22px;padding:4px 16px">
+<div onClick="{{ toggleHow }}" style="display:flex;justify-content:space-between;align-items:center;height:52px;font:700 15px Archivo;cursor:pointer">How we got this<span>{{ howIcon }}</span></div>
+<sc-if value="{{ howOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px;padding-bottom:14px;font:500 13px 'JetBrains Mono';color:#5B635D;animation:fade .2s">
+<div style="display:flex;justify-content:space-between"><span>{{ qrYd }} yd × 2 − 1</span><span style="color:#0E1411">{{ qrBase }} @1%</span></div>
+<div style="display:flex;justify-content:space-between"><span>× 2% slope</span><span style="color:#0E1411">{{ qrX2 }}</span></div>
+<div style="display:flex;justify-content:space-between"><span>uphill adj.</span><span style="color:#0E1411">{{ uphillAdj }}</span></div>
+<div style="display:flex;justify-content:space-between;border-top:1px solid #EEF0EA;padding-top:8px"><span>aim</span><span style="color:#1E9E5A;font-weight:600">{{ qrAim }}</span></div>
+</div></sc-if>
+</div>
+<div style="margin-top:auto;padding-bottom:30px;display:flex;gap:8px"><div onClick="{{ newRead }}" style="flex:1;height:56px;border-radius:28px;background:#E3E6DE;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">New read</div><div onClick="{{ saveClose }}" style="flex:1;height:56px;border-radius:28px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Save</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isReveal }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding:170px 16px 0;display:flex;flex-direction:column;gap:12px;box-sizing:border-box">
+<div style="color:#fff;border-radius:24px;padding:18px 20px;animation:pop .4s;background:{{ rv.color }}"><div style="font:800 34px Archivo;font-stretch:110%">{{ rv.verdict }}</div><div style="font:600 15px Archivo">{{ rv.line }}</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#fff;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;font:700 16px Archivo"><div style="font:600 10px 'JetBrains Mono';color:#5B635D">YOU</div><div style="font:800 26px Archivo">{{ rv.gsT }}</div><div>{{ rv.gdir }}</div><div>{{ rv.ghill }}</div><div>{{ rv.gaimT }}</div></div>
+<div style="background:#0E1411;color:#fff;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;font:700 16px Archivo;animation:fade .6s"><div style="font:600 10px 'JetBrains Mono';color:#C5CAC2">ACTUAL</div><div style="font:800 26px Archivo;color:#D4F53C">{{ rv.asT }}</div><div>{{ rv.adir }}</div><div>{{ rv.ahill }}</div><div>{{ rv.aaimT }}</div></div>
+</div>
+<div style="margin-top:auto;padding-bottom:30px"><div onClick="{{ nextPutt }}" style="height:58px;border-radius:29px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 17px Archivo;cursor:pointer">{{ nextLabel }}</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F6F2;padding:170px 16px 0;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;animation:fade .3s">
+<div style="display:flex;align-items:flex-end;gap:10px;padding:0 4px"><div style="font:800 72px/1 Archivo;font-stretch:115%;letter-spacing:-.03em;animation:pop .5s">{{ score }}</div><div style="padding-bottom:10px;font:600 14px Archivo;color:#5B635D">/100<br>round score</div></div>
+<div style="background:#fff;border-radius:22px;padding:4px 16px">
+<sc-for list="{{ summaryRows }}" as="r" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;align-items:center;height:46px;border-bottom:1px solid #EEF0EA;font:600 15px Archivo"><span>{{ r.label }}</span><span style="font-weight:800;color:{{ r.color }}">{{ r.verdict }}</span></div></sc-for>
+</div>
+<div style="background:#0E1411;color:#fff;border-radius:20px;padding:14px 16px;font:700 15px/1.35 Archivo">{{ tendency }}</div>
+<div style="margin-top:auto;padding-bottom:30px;display:flex;gap:8px"><div onClick="{{ summaryStats }}" style="flex:1;height:56px;border-radius:28px;background:#E3E6DE;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Stats</div><div onClick="{{ playAgain }}" style="flex:1;height:56px;border-radius:28px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo;cursor:pointer">Play again</div></div>
+</div>
+</sc-if>
+
+<div style="position:absolute;top:54px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5">
+<div onClick="{{ close }}" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 18px Archivo;cursor:pointer;box-shadow:0 2px 8px rgba(14,20,17,.15)">✕</div>
+<div onClick="{{ toggleSwitcher }}" style="height:48px;border-radius:24px;background:#fff;padding:0 18px;display:flex;align-items:center;gap:6px;font:800 16px Archivo;cursor:pointer;box-shadow:0 2px 8px rgba(14,20,17,.15)">{{ toolName }} <span style="font-size:12px">⌄</span></div>
+<div style="width:48px"></div>
+</div>
+<sc-if value="{{ isQr }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:112px;left:0;right:0;display:flex;justify-content:center;z-index:5"><div style="width:220px;height:42px;border-radius:21px;background:rgba(14,20,17,.6);display:grid;grid-template-columns:1fr 1fr;padding:4px;box-sizing:border-box;font:800 14px Archivo">
+<div onClick="{{ setRead }}" style="border-radius:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ readBg }};color:{{ readFg }}">Read</div>
+<div onClick="{{ setTrain }}" style="border-radius:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ trainBg }};color:{{ trainFg }}">Train</div>
+</div></div>
+</sc-if>
+<sc-if value="{{ switcherOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:110px;left:95px;right:95px;background:#fff;border-radius:22px;padding:6px;display:flex;flex-direction:column;font:700 16px Archivo;box-shadow:0 14px 34px rgba(14,20,17,.35);z-index:6;animation:pop .2s">
+<div onClick="{{ switchScan }}" style="padding:14px;border-radius:16px;cursor:pointer" style-hover="background:#EEF0EA">Scan</div>
+<div onClick="{{ switchQr }}" style="padding:14px;border-radius:16px;cursor:pointer" style-hover="background:#EEF0EA">Quick Read</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ tempoOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeTempo }}" style="position:absolute;inset:0;background:rgba(14,20,17,.35);animation:fade .2s"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:32px 32px 0 0;background:#F5F6F2;padding:10px 20px 34px;display:flex;flex-direction:column;align-items:center;gap:14px;animation:up .3s ease-out">
+<div onClick="{{ closeTempo }}" style="width:44px;height:5px;border-radius:3px;background:#C5CAC2;cursor:pointer"></div>
+<div style="font:800 22px Archivo">Tempo</div>
+<div style="width:240px;height:110px;position:relative;overflow:hidden">
+<div style="position:absolute;left:119px;top:0;width:3px;height:100px;background:#0E1411;transform-origin:top center;transition:transform .35s ease-in-out;transform:{{ pendulum }}"><div style="position:absolute;left:-13px;bottom:-14px;width:28px;height:28px;border-radius:50%;background:#1E9E5A"></div></div>
+<div style="position:absolute;left:0;bottom:0;font:800 11px 'JetBrains Mono';color:{{ backColor }}">BACK</div><div style="position:absolute;right:0;bottom:0;font:800 11px 'JetBrains Mono';color:{{ throughColor }}">THROUGH</div>
+</div>
+<div style="display:flex;align-items:center;gap:26px"><div onClick="{{ bpmDown }}" style="width:54px;height:54px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 24px Archivo;cursor:pointer">−</div><div style="text-align:center"><div style="font:800 60px/1 Archivo;font-stretch:115%">{{ bpm }}</div><div style="font:600 11px 'JetBrains Mono';color:#5B635D">BPM</div></div><div onClick="{{ bpmUp }}" style="width:54px;height:54px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 24px Archivo;cursor:pointer">+</div></div>
+<div onClick="{{ togglePlay }}" style="width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 18px Archivo;color:#fff;cursor:pointer;background:{{ playBg }}">{{ playLabel }}</div>
+<div style="font:600 13px Archivo;color:#5B635D">Haptics {{ hapticsLabel }} · back = tick, through = tock</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeSettings }}" style="position:absolute;inset:0;background:rgba(14,20,17,.35);animation:fade .2s"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:32px 32px 0 0;background:#F5F6F2;padding:10px 18px 34px;display:flex;flex-direction:column;gap:12px;animation:up .3s ease-out">
+<div onClick="{{ closeSettings }}" style="margin:0 auto;width:44px;height:5px;border-radius:3px;background:#C5CAC2;cursor:pointer"></div>
+<div style="font:800 24px Archivo">Settings</div>
+<div style="background:#fff;border-radius:20px;padding:0 16px;font:600 15px Archivo">
+<div style="display:flex;justify-content:space-between;align-items:center;height:56px">Units<div style="display:flex;background:#EEF0EA;border-radius:12px;padding:3px;font:700 13px Archivo"><span onClick="{{ setFt }}" style="border-radius:9px;padding:7px 14px;cursor:pointer;background:{{ ftBg }}">ft</span><span onClick="{{ setM }}" style="border-radius:9px;padding:7px 14px;cursor:pointer;background:{{ mBg }}">m</span></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:56px;border-top:1px solid #EEF0EA">Aim unit<div style="display:flex;background:#EEF0EA;border-radius:12px;padding:3px;font:700 13px Archivo"><sc-for list="{{ aimUnits }}" as="au" hint-placeholder-count="3"><span onClick="{{ au.pick }}" style="border-radius:9px;padding:7px 10px;cursor:pointer;background:{{ au.bg }}">{{ au.label }}</span></sc-for></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:56px;border-top:1px solid #EEF0EA">Default green speed<span style="color:#5B635D">{{ speed }}</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:56px;border-top:1px solid #EEF0EA">Pace length<span style="color:#5B635D">2.7 ft</span></div>
+<div onClick="{{ toggleHaptics }}" style="display:flex;justify-content:space-between;align-items:center;height:56px;border-top:1px solid #EEF0EA;cursor:pointer">Haptics<div style="width:46px;height:28px;border-radius:14px;position:relative;background:{{ hapticsBg }}"><div style="position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;left:{{ hapticsKnob }}"></div></div></div>
+</div>
+<div style="background:#FBE7DD;border-radius:18px;padding:12px 14px;font:500 13px/1.4 Archivo;color:#6B2C10"><b>Practice & casual play only.</b> Slope-reading devices aren't allowed in competitive rounds under the Rules of Golf.</div>
+</div>
+</sc-if>
+
+<div style="position:absolute;top:0;left:0;right:0;height:48px;display:flex;justify-content:space-between;align-items:center;padding:0 34px;font:700 15px Archivo;pointer-events:none;z-index:50;color:{{ statusColor }}">9:41<span style="font:600 12px 'JetBrains Mono'">5G ▮</span></div>
+</div>
+</div>
+<div style="max-width:300px;display:flex;flex-direction:column;gap:14px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:.08em;color:#5B635D">CLICKABLE PROTOTYPE</div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:800 40px/1 Archivo;font-stretch:118%;letter-spacing:-.03em;color:#0E1411">Green<span style="color:#1E9E5A">Read</span></span><span style="font:600 12px 'JetBrains Mono';letter-spacing:.1em;color:#5B635D">FIND THE LINE</span></div>
+<div style="font:400 15px/1.5 Archivo;color:#5B635D;text-wrap:pretty">Play / Drills switch at the top. Scan and Quick Read open as full-screen modals; Tempo and Settings are sheets. Tap the camera view to place markers.</div>
+<div onClick="{{ reset }}" style="align-self:flex-start;background:#0E1411;color:#fff;border-radius:20px;padding:10px 16px;font:700 14px Archivo;cursor:pointer">Reset prototype</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PUTTS=[{d:8,s:1,dir:'L→R',hill:'Up'},{d:12,s:3,dir:'L→R',hill:'Flat'},{d:15,s:3,dir:'R→L',hill:'Up'},{d:20,s:2,dir:'R→L',hill:'Down'},{d:6,s:2,dir:'L→R',hill:'Down'}];
+const VIDEOS=[{id:1,t:'The gate drill for 6-footers',c:'Short putts',dur:'4:12',by:'Coach Name'},{id:2,t:'Reading double breakers',c:'Green reading',dur:'7:30',by:'Creator'},{id:3,t:'Lag putting ladder',c:'Speed control',dur:'3:05',by:'Creator'},{id:4,t:'Tempo at 76 BPM',c:'Tempo',dur:'2:58',by:'Creator'},{id:5,t:'Square at impact',c:'Alignment',dur:'5:20',by:'Creator'},{id:6,t:'Trust the bigger break',c:'Green reading',dur:'5:12',by:'Creator'}];
+const CATS=['All','Saved','Green reading','Speed control','Tempo','Alignment','Short putts'];
+const base=d=>Math.max(1,Math.round(d/3*2-1));
+const aimOf=(d,s,hill)=>{let a=base(d)*s;if(hill==='Up')a-=s;if(hill==='Down')a+=s;return Math.max(0,Math.round(a));};
+const INIT={tab:'play',view:null,modal:null,step:'',mode:'read',switcher:false,settings:false,tempo:false,bpm:76,playing:false,beat:0,units:'ft',aimUnit:'in',haptics:true,taps:0,manual:false,dist:15,scanPct:0,speed:'Medium',how:false,flat:0,puttIdx:0,guess:{slope:null,dir:null,hill:null,aim:12},results:[],rounds:2,cat:'All',video:null,saved:{1:true}};
+class Component extends DCLogic{
+state={...INIT};
+timers=[];
+clearTimers(){this.timers.forEach(clearTimeout);this.timers=[];clearInterval(this.scanInt);}
+componentWillUnmount(){this.clearTimers();clearInterval(this.tempoInt);}
+go(step){this.clearTimers();this.setState({step,switcher:false});if(step==='flat')this.runFlat();if(step==='scan-scan')this.runScan();}
+runFlat(){this.setState({flat:0});const next=this.state.mode==='read'?'qr-result':'tr-reveal';this.timers.push(setTimeout(()=>this.setState({flat:1}),1100),setTimeout(()=>this.setState({flat:2}),2100),setTimeout(()=>this.go(next),3300));}
+runScan(){this.setState({scanPct:0});this.scanInt=setInterval(()=>{const p=Math.min(100,this.state.scanPct+2);this.setState({scanPct:p});if(p>=100){clearInterval(this.scanInt);this.timers.push(setTimeout(()=>this.go('scan-speed'),500));}},100);}
+openModal(m){this.clearTimers();const b={modal:m,switcher:false,taps:0,manual:false,how:false,tempo:false,settings:false};if(m==='scan')this.setState({...b,step:'scan-mark'});else this.setState({...b,mode:'read',step:'measure'});}
+setMode(mode){this.clearTimers();if(mode==='train')this.setState({mode,step:'measure',taps:0,puttIdx:0,results:[],guess:{slope:null,dir:null,hill:null,aim:12}});else this.setState({mode,step:'measure',taps:0,how:false});}
+startTempo(bpm){clearInterval(this.tempoInt);this.tempoInt=setInterval(()=>this.setState(s=>({beat:1-s.beat})),60000/bpm);}
+setGuess(p){this.setState(s=>({guess:{...s.guess,...p}}));}
+lock(){const s=this.state,a=PUTTS[s.puttIdx],g=s.guess;const dirOk=g.dir===a.dir;let verdict,color;if(g.slope===a.s&&dirOk){verdict='Spot on';color='#1E9E5A';}else if(!dirOk){verdict='Wrong way';color='#D9622B';}else if(g.slope<a.s){verdict='Under-read';color='#D9622B';}else{verdict='Over-read';color='#4A6FA5';}
+const diff=Math.abs(g.slope-a.s);let pts=diff===0?20:diff===1?12:5;if(!dirOk)pts=Math.max(0,pts-5);
+this.setState({results:[...s.results,{n:s.puttIdx+1,d:a.d,gs:g.slope,as:a.s,gdir:g.dir,adir:a.dir,ghill:g.hill,ahill:a.hill,gaim:g.aim,aaim:aimOf(a.d,a.s,a.hill),verdict,color,pts,signed:g.slope-a.s}]});this.go('flat');}
+fa(i){const u=this.state.aimUnit;if(u==='cups'){const c=Math.round(i/4.25*2)/2;return c+(c===1?' cup':' cups');}if(u==='balls'){const b=Math.round(i/1.68);return b+(b===1?' ball':' balls');}return i+'in';}
+fmt(d){return this.state.units==='ft'?d+' ft':(d*0.3048).toFixed(1)+' m';}
+renderVals(){const s=this.state,isTrain=s.mode==='train';const putt=PUTTS[s.puttIdx];const md=isTrain?putt.d:s.dist;
+const chip=(sel)=>({bg:sel?'#0E1411':'#fff',fg:sel?'#fff':'#0E1411'});
+const last=s.results[s.results.length-1]||{};
+const score=s.results.reduce((a,r)=>a+r.pts,0);
+const unders=s.results.filter(r=>r.signed<0).length,overs=s.results.filter(r=>r.signed>0).length;
+const tendency=unders>overs?'You tend to under-read — trust more break.':overs>unders?'You tend to over-read — play a little less break.':'Nicely balanced reads this round.';
+const vids=VIDEOS.filter(v=>s.cat==='All'||(s.cat==='Saved'?s.saved[v.id]:v.c===s.cat)).map(v=>({...v,heart:s.saved[v.id]?'♥':'♡',heartColor:s.saved[v.id]?'#1E9E5A':'#8A918B',open:()=>this.setState({view:'player',video:v.id}),toggle:()=>this.setState(st=>({saved:{...st.saved,[v.id]:!st.saved[v.id]}}))}));
+const cv=VIDEOS.find(v=>v.id===s.video)||VIDEOS[0];
+const prompt=s.scanPct<30?'Walk slowly to the hole':s.scanPct<55?'Slow down':s.scanPct<78?'Cover left side':'Gap behind you';
+const scanAim={Slow:5,Medium:6,Fast:8}[s.speed];
+const qrAim=aimOf(s.dist,2,'Up');
+const bar=(label,v)=>({label,left:v<0?(50+v)+'%':'50%',width:Math.abs(v)+'%',color:v<0?'#D9622B':'#4A6FA5'});
+const flatBg=s.flat===0?'#D9622B':'#1E9E5A';
+return{
+showHome:!s.modal&&!s.view,isPlay:s.tab==='play',isDrills:s.tab==='drills',isStats:!s.modal&&s.view==='stats',isPlayer:!s.modal&&s.view==='player',
+playTabBg:s.tab==='play'?'#fff':'transparent',playTabFg:s.tab==='play'?'#0E1411':'#5B635D',drillsTabBg:s.tab==='drills'?'#fff':'transparent',drillsTabFg:s.tab==='drills'?'#0E1411':'#5B635D',
+tabPlay:()=>this.setState({tab:'play'}),tabDrills:()=>this.setState({tab:'drills'}),
+openScan:()=>this.openModal('scan'),openQr:()=>this.openModal('qr'),openTempo:()=>this.setState({tempo:true}),closeTempo:()=>this.setState({tempo:false}),openStats:()=>this.setState({view:'stats'}),back:()=>this.setState({view:null}),
+openSettings:()=>this.setState({settings:true}),closeSettings:()=>this.setState({settings:false}),
+tempoSub:s.playing?'Playing · '+s.bpm+' BPM':'Metronome · '+s.bpm+' BPM',statsHint:s.rounds>=3?'71%':s.rounds+'/3 rounds',
+cats:CATS.map(c=>({label:c,...(()=>{const x=chip(s.cat===c);return{bg:x.bg,fg:x.fg}})(),pick:()=>this.setState({cat:c})})),videos:vids,noVideos:vids.length===0,
+statsLocked:s.rounds<3,statsOpen:s.rounds>=3,rounds:s.rounds,roundsText:s.rounds+' of 3 done. We\'ll show where you over- and under-read.',unlockBars:[0,1,2].map(i=>({bg:i<s.rounds?'#1E9E5A':'#DADDD5'})),
+insight:'You under-read left-to-right putts by about 30%',breakdown:[bar('L → R',-34),bar('R → L',-8),bar('Uphill',14),bar('Downhill',-22),bar('3–4%',-28),bar('20 ft+',10)],
+startTrain:()=>{this.setState({view:null});this.openModal('qr');this.setMode('train');},
+video:{...cv,saveLabel:s.saved[cv.id]?'♥ Saved':'♡ Save',toggle:()=>this.setState(st=>({saved:{...st.saved,[cv.id]:!st.saved[cv.id]}}))},
+tempoOpen:s.tempo,bpm:s.bpm,pendulum:s.playing?(s.beat?'rotate(-28deg)':'rotate(28deg)'):'rotate(0deg)',backColor:s.playing&&s.beat?'#1E9E5A':'#8A918B',throughColor:s.playing&&!s.beat?'#1E9E5A':'#8A918B',
+bpmDown:()=>{const b=Math.max(60,s.bpm-1);this.setState({bpm:b});if(s.playing)this.startTempo(b);},bpmUp:()=>{const b=Math.min(100,s.bpm+1);this.setState({bpm:b});if(s.playing)this.startTempo(b);},
+togglePlay:()=>{if(s.playing){clearInterval(this.tempoInt);this.setState({playing:false,beat:0});}else{this.startTempo(s.bpm);this.setState({playing:true});}},
+playBg:s.playing?'#0E1411':'#1E9E5A',playLabel:s.playing?'Stop':'Start',hapticsLabel:s.haptics?'on':'off',
+settingsOpen:s.settings,setFt:()=>this.setState({units:'ft'}),setM:()=>this.setState({units:'m'}),ftBg:s.units==='ft'?'#fff':'transparent',mBg:s.units==='m'?'#fff':'transparent',speed:s.speed,
+toggleHaptics:()=>this.setState({haptics:!s.haptics}),hapticsBg:s.haptics?'#1E9E5A':'#C5CAC2',hapticsKnob:s.haptics?'21px':'3px',
+statusColor:s.modal&&(s.step.startsWith('scan')||s.step==='measure'||(s.step==='flat'))?'#fff':'#0E1411',
+reset:()=>{this.clearTimers();clearInterval(this.tempoInt);this.setState({...INIT});},
+isModal:!!s.modal,isScan:s.modal==='scan',isQr:s.modal==='qr',close:()=>{this.clearTimers();this.setState({modal:null,switcher:false});},
+toolName:s.modal==='scan'?'Scan':'Quick Read',toggleSwitcher:()=>this.setState({switcher:!s.switcher}),switcherOpen:s.switcher,
+switchScan:()=>this.openModal('scan'),switchQr:()=>this.openModal('qr'),
+readBg:isTrain?'transparent':'#fff',trainBg:isTrain?'#fff':'transparent',readFg:isTrain?'#C5CAC2':'#0E1411',trainFg:isTrain?'#0E1411':'#C5CAC2',setRead:()=>this.setMode('read'),setTrain:()=>this.setMode('train'),
+isScanMark:s.step==='scan-mark',ballPlaced:s.taps>=1,holePlaced:s.taps>=2,markPrompt:s.taps===0?'Tap the ball':s.taps===1?'Now tap the hole':'Ball & hole set',tapCam:()=>this.setState(st=>({taps:Math.min(2,st.taps+1)})),undoTap:()=>this.setState(st=>({taps:Math.max(0,st.taps-1)})),
+canStartScan:s.taps>=2,cantStartScan:s.taps<2,startScan:()=>this.go('scan-scan'),
+isScanning:s.step==='scan-scan',scanPct:s.scanPct,scanPctText:s.scanPct+'%',scanRing:'conic-gradient(#D4F53C 0 '+s.scanPct+'%,rgba(255,255,255,.25) '+s.scanPct+'% 100%)',scanBlob:(20+s.scanPct*0.8)+'%',scanPrompt:prompt,
+isSpeed:s.step==='scan-speed',speeds:['Slow','Medium','Fast'].map((v,i)=>({label:v,stimp:'Stimp '+[8,10,12][i],...chip(s.speed===v),pick:()=>this.setState({speed:v})})),showLine:()=>this.go('scan-result'),
+isScanResult:s.step==='scan-result',scanDist:this.fmt(10),scanPlays:this.fmt(12),scanAim:this.fa(scanAim),rescan:()=>this.setState({taps:0,step:'scan-mark'}),saveClose:()=>{this.clearTimers();this.setState({modal:null});},
+isMeasure:s.step==='measure',isMeasureRead:!isTrain,measureTitle:isTrain?'Putt '+(s.puttIdx+1)+' of 5':'Step 1 · Distance',measurePrompt:s.taps===0?'Tap the ball':s.taps===1?'Now tap the hole':'Measured',measured:s.taps>=2||s.manual,notMeasured:!(s.taps>=2||s.manual),measureDist:this.fmt(md),
+toggleManual:()=>this.setState({manual:!s.manual}),manualOpen:s.manual&&!isTrain,manualLabel:s.manual?'Use camera':'Enter manually',distDown:()=>this.setState({dist:Math.max(3,s.dist-1)}),distUp:()=>this.setState({dist:Math.min(60,s.dist+1)}),
+measureNext:()=>this.go(isTrain?'guess':'flat'),measureNextLabel:isTrain?'Next · make your read':'Next · lay phone flat',
+trainDots:PUTTS.map((p,i)=>({bg:i<s.puttIdx?'#1E9E5A':i===s.puttIdx?'#D4F53C':'rgba(255,255,255,.35)'})),trainDotsLight:PUTTS.map((p,i)=>({bg:i<s.puttIdx?'#1E9E5A':i===s.puttIdx?'#0E1411':'#C5CAC2'})),isTrain,
+isGuess:s.step==='guess',slopeChips:[1,2,3,4].map(v=>({label:v+'%',...chip(s.guess.slope===v),pick:()=>this.setGuess({slope:v})})),dirChips:['L→R','R→L','Straight'].map(v=>({label:v,...chip(s.guess.dir===v),pick:()=>this.setGuess({dir:v})})),hillChips:['Up','Flat','Down'].map(v=>({label:v,...chip(s.guess.hill===v),pick:()=>this.setGuess({hill:v})})),
+guessAim:this.fa(s.guess.aim),aimLabel:{in:'AIM (INCHES OUTSIDE CUP)',cups:'AIM (INCHES · SHOWN IN CUPS)',balls:'AIM (INCHES · SHOWN IN BALLS)'}[s.aimUnit],uphillAdj:'−'+this.fa(2),aimUnits:[['in','Inches'],['cups','Cups'],['balls','Balls']].map(([k,l])=>({label:l,bg:s.aimUnit===k?'#fff':'transparent',pick:()=>this.setState({aimUnit:k})})),aimDown:()=>this.setGuess({aim:Math.max(0,s.guess.aim-1)}),aimUp:()=>this.setGuess({aim:s.guess.aim+1}),canLock:!!(s.guess.slope&&s.guess.dir&&s.guess.hill),cantLock:!(s.guess.slope&&s.guess.dir&&s.guess.hill),lock:()=>this.lock(),
+isFlat:s.step==='flat',flatBg,flatOk:s.flat>=1,aimedText:s.flat>=1?'✓':'↻ turn',flatTitle:s.flat===0?'Turn top edge to hole':s.flat===1?'Flat & aimed':'Reading…',showLive:!isTrain&&s.flat>=1,trainHidden:isTrain,
+isQrResult:s.step==='qr-result',qrAim:this.fa(qrAim),qrDist:this.fmt(s.dist),qrPlays:this.fmt(s.dist+2),qrYd:(s.dist/3).toFixed(1),qrBase:this.fa(base(s.dist)),qrX2:this.fa(base(s.dist)*2),toggleHow:()=>this.setState({how:!s.how}),howOpen:s.how,howIcon:s.how?'⌃':'⌄',newRead:()=>this.setState({step:'measure',taps:0,how:false}),
+isReveal:s.step==='tr-reveal',rv:{...last,gsT:(last.gs||0)+'%',asT:(last.as||0)+'%',gaimT:this.fa(last.gaim||0),aaimT:this.fa(last.aaim||0),line:'You read '+last.gs+'%, it was '+last.as+'%'},
+nextPutt:()=>{if(s.puttIdx>=4){this.go('tr-summary');}else{this.setState({puttIdx:s.puttIdx+1,taps:0,guess:{slope:null,dir:null,hill:null,aim:12}});this.go('measure');}},nextLabel:s.puttIdx>=4?'See round summary':'Next putt · '+(s.puttIdx+2)+'/5',
+isSummary:s.step==='tr-summary',score,summaryRows:s.results.map(r=>({label:r.n+' · '+this.fmt(r.d)+' '+r.adir,verdict:r.verdict,color:r.color})),tendency,
+playAgain:()=>{this.setState({rounds:s.rounds+1});this.setMode('train');},summaryStats:()=>{this.clearTimers();this.setState({rounds:s.rounds+1,modal:null,view:'stats'});}
+};}
+}
+</script>
+</body>
+</html>

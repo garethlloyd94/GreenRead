@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>body{margin:0;background:#E9EBE5;font-family:Archivo,sans-serif;color:#0E1411}a{color:#1E9E5A}a:hover{color:#147A43}</style></helmet>
+<section data-screen-label="Scan states" style="padding:56px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:6px;max-width:720px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:.08em;color:#5B635D">SCAN TAB · SUPPORTING SCREENS & STATES</div>
+<h2 style="margin:0;font:800 40px Archivo;font-stretch:115%;letter-spacing:-.02em">Scan — steps & states</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S1 · Mark ball & hole</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:repeating-linear-gradient(135deg,#3E5A44 0 10px,#466349 10px 20px)">
+<div style="position:absolute;top:0;left:0;right:0;height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo;color:#fff">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="position:absolute;top:56px;left:0;right:0;display:flex;justify-content:center"><div style="background:#fff;border-radius:22px;padding:10px 16px;font:800 16px Archivo;display:flex;gap:8px;align-items:center"><span style="background:#1E9E5A;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px">✓</span>Ball · <span style="color:#1E9E5A">Now tap the hole</span></div></div>
+<div style="position:absolute;left:118px;top:420px;display:flex;flex-direction:column;align-items:center"><div style="background:#fff;border-radius:8px;padding:2px 7px;font:800 10px Archivo">BALL</div><div style="width:3px;height:30px;background:#fff"></div><div style="width:18px;height:18px;border-radius:50%;background:#fff"></div></div>
+<div style="position:absolute;left:112px;top:170px;width:56px;height:56px;border-radius:50%;border:3px solid #D4F53C;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;border-radius:50%;background:#D4F53C"></div></div>
+<div style="position:absolute;bottom:30px;left:16px;right:16px;display:flex;gap:8px"><div style="flex:1;height:52px;border-radius:26px;background:rgba(14,20,17,.7);color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px Archivo">Undo</div><div style="flex:2;height:52px;border-radius:26px;background:#D4F53C;display:flex;align-items:center;justify-content:center;font:800 15px Archivo">Place hole</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S2 · Green speed</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:repeating-linear-gradient(135deg,#3E5A44 0 10px,#466349 10px 20px);display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo;color:#fff">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin-top:auto;background:#fff;border-radius:28px 28px 0 0;padding:22px 18px 28px;display:flex;flex-direction:column;gap:14px">
+<div style="font:800 24px Archivo">How fast is the green?</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font:800 16px Archivo">
+<div style="height:72px;border-radius:18px;background:#EEF0EA;display:flex;flex-direction:column;align-items:center;justify-content:center">Slow<span style="font:600 11px Archivo;color:#5B635D">Stimp 8</span></div>
+<div style="height:72px;border-radius:18px;background:#0E1411;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center">Medium<span style="font:600 11px Archivo;color:#C5CAC2">Stimp 10</span></div>
+<div style="height:72px;border-radius:18px;background:#EEF0EA;display:flex;flex-direction:column;align-items:center;justify-content:center">Fast<span style="font:600 11px Archivo;color:#5B635D">Stimp 12</span></div>
+</div>
+<div style="font:700 13px Archivo;color:#1E9E5A">Enter exact Stimp ›</div>
+<div style="height:54px;border-radius:27px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Show my line</div>
+</div></div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S3 · Non-LiDAR device</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin:30px 20px 0;width:72px;height:72px;border-radius:22px;background:#E3E6DE;display:flex;align-items:center;justify-content:center"><div style="width:26px;height:26px;border-radius:50%;border:4px solid #8A918B"></div></div>
+<div style="padding:20px 20px 0;font:800 28px/1.08 Archivo;font-stretch:110%;letter-spacing:-.02em">AR Scan needs a LiDAR iPhone</div>
+<div style="padding:10px 20px 0;font:400 15px/1.45 Archivo;color:#5B635D">Pro models from iPhone 12 Pro have it. Quick Read works on any phone — and gives you the same aim number.</div>
+<div style="margin-top:auto;padding:0 16px 14px"><div style="height:56px;border-radius:28px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Use Quick Read</div></div>
+<div style="height:74px;background:#fff;border-top:1px solid #E3E5DF;display:grid;grid-template-columns:repeat(4,1fr);padding-top:10px;box-sizing:border-box;font:600 10px Archivo;color:#8A918B">
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#1E9E5A"><div style="width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor"></div>Scan</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:18px;height:18px;border-radius:4px;border:2.5px solid currentColor"></div>Read</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:14px;height:14px;margin:2px;transform:rotate(45deg);border:2.5px solid currentColor"></div>Tempo</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:20px;height:15px;margin:1.5px 0;border-radius:4px;border:2.5px solid currentColor"></div>Drills</div>
+</div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S4 · Poor scan → rescan</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:repeating-linear-gradient(135deg,#3E5A44 0 10px,#466349 10px 20px);display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo;color:#fff">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin-top:auto;background:#fff;border-radius:28px 28px 0 0;padding:22px 18px 28px;display:flex;flex-direction:column;gap:12px">
+<div style="width:44px;height:44px;border-radius:50%;background:#FBE7DD;color:#D9622B;display:flex;align-items:center;justify-content:center;font:800 22px Archivo">!</div>
+<div style="font:800 24px/1.1 Archivo">Not enough of the green</div>
+<div style="font:400 14px/1.45 Archivo;color:#5B635D">We covered 41%. Walk a little slower and sweep both sides of the line.</div>
+<div style="height:54px;border-radius:27px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Rescan gaps only</div>
+<div style="text-align:center;font:700 14px Archivo;color:#5B635D">Start over</div>
+</div></div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S5 · Bright-sun warning</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:repeating-linear-gradient(135deg,#7E9A7F 0 10px,#87A387 10px 20px)">
+<div style="position:absolute;top:0;left:0;right:0;height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo;color:#fff">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="position:absolute;top:56px;left:16px;right:16px;background:#0E1411;color:#fff;border-radius:20px;padding:14px 16px;display:flex;gap:12px;align-items:center"><div style="width:34px;height:34px;flex-shrink:0;border-radius:50%;background:#D4F53C"></div><div><div style="font:800 16px Archivo">Strong sun</div><div style="font:500 12px Archivo;color:#C5CAC2">Stand so your shadow isn't on the line</div></div></div>
+<div style="position:absolute;bottom:30px;left:0;right:0;display:flex;justify-content:center"><div style="background:#fff;border-radius:22px;padding:10px 16px;font:700 14px Archivo">High-contrast mode on</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S6 · Camera permission</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin:16px 16px 0;height:220px;border-radius:24px;background:repeating-linear-gradient(135deg,#DDE5D8 0 10px,#E5ECE1 10px 20px);display:flex;align-items:flex-end;padding:12px;box-sizing:border-box;font:500 10px 'JetBrains Mono';color:#4A5A4E">PREVIEW · AR LINE ON GREEN</div>
+<div style="padding:20px 20px 0;font:800 26px/1.08 Archivo;font-stretch:110%;letter-spacing:-.02em">Let Scan see the green</div>
+<div style="padding:8px 20px 0;font:400 14px/1.45 Archivo;color:#5B635D">The camera maps slope in 3D. Nothing is recorded or uploaded.</div>
+<div style="margin-top:auto;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px"><div style="height:56px;border-radius:28px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Allow camera</div><div style="text-align:center;font:700 14px Archivo;color:#5B635D">Use Quick Read instead</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">S7 · Motion permission</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin:16px 16px 0;height:220px;border-radius:24px;background:#1E9E5A;position:relative;display:flex;align-items:center;justify-content:center">
+<div style="width:110px;height:170px;border-radius:22px;background:#0E1411;transform:perspective(400px) rotateX(48deg);display:flex;align-items:center;justify-content:center"><div style="width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:26px solid #D4F53C"></div></div>
+<div style="position:absolute;left:12px;bottom:10px;font:500 10px 'JetBrains Mono';color:#DDE8DF">PHONE LYING FLAT ON GREEN</div>
+</div>
+<div style="padding:20px 20px 0;font:800 26px/1.08 Archivo;font-stretch:110%;letter-spacing:-.02em">Let your phone feel the slope</div>
+<div style="padding:8px 20px 0;font:400 14px/1.45 Archivo;color:#5B635D">Quick Read uses motion sensors to measure tilt when your phone lies flat. Only used during a read — nothing leaves your phone.</div>
+<div style="margin-top:auto;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px"><div style="height:56px;border-radius:28px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Allow motion</div><div style="text-align:center;font:700 14px Archivo;color:#5B635D">Not now</div></div>
+</div></div>
+</div>
+
+</div>
+</section>
+
+<section data-screen-label="Quick Read states" style="padding:56px;display:flex;flex-direction:column;gap:28px;border-top:1px solid #D3D7CE">
+<div style="display:flex;flex-direction:column;gap:6px;max-width:720px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:.08em;color:#5B635D">QUICK READ & TRAIN · SUPPORTING SCREENS & STATES</div>
+<h2 style="margin:0;font:800 40px Archivo;font-stretch:115%;letter-spacing:-.02em">Measure distance & empty states</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Q1 · Measure: AR tap (default)</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:repeating-linear-gradient(135deg,#3E5A44 0 10px,#466349 10px 20px)">
+<div style="position:absolute;top:0;left:0;right:0;height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo;color:#fff">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<svg width="274" height="594" style="position:absolute;inset:0"><line x1="137" y1="400" x2="150" y2="160" stroke="#fff" stroke-width="3" stroke-dasharray="6 6"></line><circle cx="137" cy="402" r="9" fill="#fff"></circle><ellipse cx="150" cy="158" rx="13" ry="6" fill="#0E1411" stroke="#fff" stroke-width="2"></ellipse></svg>
+<div style="position:absolute;left:150px;top:268px;background:#fff;border-radius:14px;padding:6px 12px;font:800 22px Archivo">15 ft</div>
+<div style="position:absolute;left:12px;right:12px;bottom:14px;background:#fff;border-radius:26px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font:600 10px 'JetBrains Mono';color:#5B635D">STEP 1 · DISTANCE</div><div style="font:800 34px Archivo">15 ft</div></div><div style="background:#EEF0EA;border-radius:14px;padding:8px 12px;font:700 13px Archivo">✎ Edit</div></div>
+<div style="display:flex;gap:12px;font:700 13px Archivo;color:#1E9E5A"><span>Walk it off</span><span>Enter manually</span></div>
+<div style="height:50px;border-radius:25px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px Archivo">Next · lay phone flat</div>
+</div></div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Q2 · Walk it off</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column;align-items:center">
+<div style="height:40px;width:100%;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;box-sizing:border-box;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin-top:30px;font:700 12px 'JetBrains Mono';color:#5B635D">WALKING TO THE HOLE…</div>
+<div style="margin-top:10px;font:800 110px/0.9 Archivo;font-stretch:120%;letter-spacing:-.05em">11</div>
+<div style="font:800 20px Archivo;color:#5B635D">feet so far</div>
+<div style="margin-top:20px;display:flex;gap:6px"><span style="width:14px;height:14px;border-radius:50%;background:#1E9E5A"></span><span style="width:14px;height:14px;border-radius:50%;background:#1E9E5A"></span><span style="width:14px;height:14px;border-radius:50%;background:#1E9E5A"></span><span style="width:14px;height:14px;border-radius:50%;background:#1E9E5A"></span><span style="width:14px;height:14px;border-radius:50%;background:#DADDD5"></span></div>
+<div style="margin-top:6px;font:600 12px Archivo;color:#5B635D">4 paces · 2.7 ft each (calibrated)</div>
+<div style="margin-top:auto;width:100%;padding:0 16px 24px;box-sizing:border-box"><div style="height:110px;border-radius:30px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:800 22px Archivo">Tap at the hole</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Q3 · Enter manually</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="padding:8px 20px 0;font:800 24px Archivo">Distance</div>
+<div style="margin:14px 16px 0;height:36px;border-radius:18px;background:#E3E6DE;display:grid;grid-template-columns:1fr 1fr;padding:3px;box-sizing:border-box;font:700 13px Archivo"><div style="background:#fff;border-radius:15px;display:flex;align-items:center;justify-content:center">Feet</div><div style="display:flex;align-items:center;justify-content:center;color:#5B635D">Paces</div></div>
+<div style="margin:40px 16px 0;display:flex;align-items:center;justify-content:space-between"><div style="width:72px;height:72px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 30px Archivo">−</div><div style="text-align:center"><div style="font:800 76px/1 Archivo;font-stretch:120%">15</div><div style="font:700 14px Archivo;color:#5B635D">ft · 5 yd</div></div><div style="width:72px;height:72px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:800 30px Archivo">+</div></div>
+<div style="margin:30px 16px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font:700 14px Archivo"><div style="height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center">5</div><div style="height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center">10</div><div style="height:44px;border-radius:12px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center">15</div><div style="height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center">20</div></div>
+<div style="margin-top:auto;padding:0 16px 24px"><div style="height:54px;border-radius:27px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Done</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Q4 · Train: lay flat (numbers hidden)</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#D9622B;color:#fff;display:flex;flex-direction:column;align-items:center">
+<div style="height:40px;width:100%;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;box-sizing:border-box;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="margin-top:20px;width:0;height:0;border-left:56px solid transparent;border-right:56px solid transparent;border-bottom:80px solid #fff"></div>
+<div style="margin-top:12px;font:800 15px 'JetBrains Mono';letter-spacing:.1em">AIM AT HOLE</div>
+<div style="margin-top:48px;display:flex;flex-direction:column;gap:12px;width:220px">
+<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.2);border-radius:20px;padding:16px 18px;font:800 22px Archivo">Flat<span>✓</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.2);border-radius:20px;padding:16px 18px;font:800 22px Archivo">Aimed<span>↻ turn</span></div>
+</div>
+<div style="margin-top:auto;margin-bottom:34px;font:700 14px Archivo">Your guess is locked · no peeking</div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Q5 · Progress empty state</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="padding:4px 18px 0;font:800 24px Archivo">Your reads</div>
+<div style="margin:16px 16px 0;background:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:8px"><div style="flex:1;height:10px;border-radius:5px;background:#1E9E5A"></div><div style="flex:1;height:10px;border-radius:5px;background:#DADDD5"></div><div style="flex:1;height:10px;border-radius:5px;background:#DADDD5"></div></div>
+<div style="font:800 24px/1.1 Archivo">Play 3 rounds to unlock your insights</div>
+<div style="font:400 14px/1.45 Archivo;color:#5B635D">1 of 3 done. We'll show where you over- and under-read.</div>
+</div>
+<div style="margin:12px 16px 0;display:flex;flex-direction:column;gap:8px">
+<div style="height:46px;border-radius:14px;background:#E3E6DE"></div><div style="height:46px;border-radius:14px;background:#E3E6DE;opacity:.6"></div><div style="height:46px;border-radius:14px;background:#E3E6DE;opacity:.35"></div>
+</div>
+<div style="margin-top:auto;padding:0 16px 24px"><div style="height:54px;border-radius:27px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Play a round</div></div>
+</div></div>
+</div>
+
+</div>
+</section>
+<section data-screen-label="Tempo, Drills, Settings" style="padding:56px;display:flex;flex-direction:column;gap:28px;border-top:1px solid #D3D7CE">
+<div style="display:flex;flex-direction:column;gap:6px;max-width:720px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:.08em;color:#5B635D">TEMPO · DRILLS · SETTINGS</div>
+<h2 style="margin:0;font:800 40px Archivo;font-stretch:115%;letter-spacing:-.02em">Session setup, player & settings</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">T1 · Practice session setup</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="padding:4px 18px 0;font:800 24px Archivo">New session</div>
+<div style="padding:18px 18px 0;font:600 10px 'JetBrains Mono';color:#5B635D">DISTANCES</div>
+<div style="padding:6px 16px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font:800 16px Archivo"><div style="height:50px;border-radius:14px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center">10 ft</div><div style="height:50px;border-radius:14px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center">20 ft</div><div style="height:50px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center">30 ft</div></div>
+<div style="padding:18px 18px 0;font:600 10px 'JetBrains Mono';color:#5B635D">REPS</div>
+<div style="margin:6px 16px 0;height:56px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px"><div style="width:42px;height:42px;border-radius:12px;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 20px Archivo">−</div><div style="font:800 24px Archivo">15</div><div style="width:42px;height:42px;border-radius:12px;background:#EEF0EA;display:flex;align-items:center;justify-content:center;font:800 20px Archivo">+</div></div>
+<div style="margin:12px 16px 0;height:56px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:700 15px Archivo">Random order<div style="width:46px;height:28px;border-radius:14px;background:#1E9E5A;position:relative"><div style="position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff"></div></div></div>
+<div style="margin:8px 16px 0;height:56px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:700 15px Archivo">Call out distance<div style="width:46px;height:28px;border-radius:14px;background:#C5CAC2;position:relative"><div style="position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff"></div></div></div>
+<div style="margin-top:auto;padding:0 16px 24px"><div style="height:56px;border-radius:28px;background:#1E9E5A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px Archivo">Start · 76 BPM</div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">D1 · In-app player</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="height:156px;background:repeating-linear-gradient(135deg,#2A322D 0 10px,#323B35 10px 20px);position:relative"><div style="position:absolute;left:12px;top:10px;font:500 9px 'JetBrains Mono';color:#8A918B">YOUTUBE EMBED</div><div style="position:absolute;left:12px;right:12px;bottom:10px;height:4px;border-radius:2px;background:rgba(255,255,255,.3)"><div style="width:35%;height:100%;border-radius:2px;background:#D4F53C"></div></div></div>
+<div style="padding:16px 18px 0;font:800 20px/1.15 Archivo">The gate drill for 6-footers</div>
+<div style="padding:6px 18px 0;font:600 13px Archivo;color:#5B635D">Coach Name · 4:12 · Short putts</div>
+<div style="padding:14px 16px 0;display:flex;gap:8px"><div style="flex:1;height:46px;border-radius:23px;background:#0E1411;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px Archivo">♥ Saved</div><div style="flex:1;height:46px;border-radius:23px;background:#E3E6DE;display:flex;align-items:center;justify-content:center;font:700 14px Archivo">Start tempo</div></div>
+<div style="padding:18px 18px 6px;font:800 15px Archivo">Up next</div>
+<div style="padding:0 16px;display:flex;gap:12px;align-items:center"><div style="width:96px;height:56px;border-radius:12px;background:repeating-linear-gradient(135deg,#DDE5D8 0 8px,#E5ECE1 8px 16px)"></div><div><div style="font:700 13px Archivo">Circle drill, 3 ft</div><div style="font:500 11px Archivo;color:#5B635D">2:10</div></div></div>
+</div></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;width:290px">
+<div style="font:700 14px Archivo">Settings</div>
+<div style="width:290px;height:610px;border-radius:46px;background:#0E1411;padding:8px;box-sizing:border-box"><div style="position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:#F5F6F2;display:flex;flex-direction:column">
+<div style="height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 13px Archivo">9:41<span style="font:600 11px 'JetBrains Mono'">5G ▮</span></div>
+<div style="padding:4px 18px 0;font:800 24px Archivo">Settings</div>
+<div style="margin:12px 16px 0;background:#fff;border-radius:20px;padding:0 14px;font:600 14px Archivo">
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px">Units<div style="display:flex;background:#EEF0EA;border-radius:12px;padding:3px;font:700 12px Archivo"><span style="background:#fff;border-radius:9px;padding:5px 10px">ft</span><span style="padding:5px 10px;color:#5B635D">m</span></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px;border-top:1px solid #EEF0EA">Default green speed<span style="color:#5B635D">Medium ›</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px;border-top:1px solid #EEF0EA">Pace length<span style="color:#5B635D">2.7 ft · Calibrate ›</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px;border-top:1px solid #EEF0EA">Aim unit<span style="color:#5B635D">Inches ›</span></div>
+</div>
+<div style="margin:10px 16px 0;background:#fff;border-radius:20px;padding:0 14px;font:600 14px Archivo">
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px">Sounds<div style="width:42px;height:26px;border-radius:13px;background:#1E9E5A;position:relative"><div style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></div></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;height:50px;border-top:1px solid #EEF0EA">Haptics<div style="width:42px;height:26px;border-radius:13px;background:#1E9E5A;position:relative"><div style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></div></div></div>
+</div>
+<div style="margin:10px 16px 0;background:#FBE7DD;border-radius:18px;padding:12px 14px;font:500 12px/1.4 Archivo;color:#6B2C10"><b>Practice & casual play only.</b> Slope-reading devices aren't allowed during competitive rounds under the Rules of Golf.</div>
+</div></div>
+</div>
+
+</div>
+</section></x-dc>
+</body>
+</html>
