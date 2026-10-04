@@ -5,7 +5,7 @@
 **Frameworks:** SwiftUI · SwiftData · CoreMotion · ARKit/RealityKit · AVAudioEngine · Core Haptics · WebKit (YouTube player only).
 **Source of truth:** `design_handoff_putting_app/` — README spec, then `prototype/Putting App Prototype.dc.html`, then `reference/Putting App Design Pack.html` for screens the prototype covers lightly.
 
-Status: **DRAFT — awaiting your approval.** Section 9 lists the decisions I need from you before I write code. The handoff asks me not to invent screens or copy, so everything that isn't in the files is called out there.
+Status: **REVISION 2 — awaiting final sign-off.** Your answers are folded in. Two items remain in section 9 (Q3, Q11), plus confirmation of the researched formulas (Q1, Q2).
 
 ---
 
@@ -106,7 +106,7 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 | 2 | Home — Play tiles | Prototype / Nd |
 | 3 | Home — Drills feed + chips | Prototype / 12a list rows |
 | 4 | Settings sheet | Prototype + design pack Settings |
-| 5 | Camera / motion permission primers | S6 (plus a motion variant, see Q9) |
+| 5 | Camera / motion permission primers | S6, S7 |
 | 6 | Modal chrome: ✕, tool-name switcher pill, Read \| Train | Prototype / M2 |
 | 7 | QR Measure: AR tap · Walk it off · Enter manually | Prototype, Q1–Q3 |
 | 8 | QR Lay flat: orange/green full-screen state | Prototype / 4c |
@@ -116,7 +116,7 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 | 12 | Train Reveal (side-by-side) | Prototype / 7a |
 | 13 | Train Round summary | Prototype / 8a |
 | 14 | Stats: locked empty state and unlocked insight + diverging bars | Q5 / 9a |
-| 15 | Tempo sheet: Metronome · Drill · Session (setup and running) | 10a, 11b, T1, 11d |
+| 15 | Tempo sheet: metronome only (MVP) | Prototype / 10a without the tabs |
 | 16 | Video player (YouTube embed, Save, Start tempo, Up next) | D1 |
 | 17 | Scan Mark ball and hole | Prototype / S1 |
 | 18 | Scanning (paint overlay + ring + prompt pill) | Prototype / 2a |
@@ -146,7 +146,7 @@ Play | Drills switch, tiles (the Tempo subtitle shows live BPM; the Stats tile s
 Guess form, hidden lay-flat, reveal, summary, `TrainScoring` + `StatsEngine` + tests, SwiftData rounds, Stats locked/unlocked, Play again, Stats from summary.
 
 **M5 — Tempo**
-`TempoEngine` on AVAudioEngine with sample-accurate scheduling (buffers scheduled ahead against `AVAudioTime`, not timers), distinct back and through sounds, Core Haptics synced to the beat, pendulum driven by the audio clock, ± BPM in steps of 1 (60–100), drill (10/20/30 ft → 5/9/13 in) and session (distances, reps, random order, distance called out with AVSpeechSynthesizer). Background audio, so it keeps playing with the phone in a pocket.
+`TempoEngine` on AVAudioEngine with sample-accurate scheduling (buffers scheduled ahead against `AVAudioTime`, not timers), distinct back and through sounds, Core Haptics synced to the beat, pendulum driven by the audio clock, ± BPM in steps of 1 (60–100). Metronome only for MVP; Drill and Session are deferred (Q8). Background audio, so it keeps playing with the phone in a pocket.
 
 **M6 — Drills**
 `drills.json` catalogue, category chips (All, Saved, Green reading, Speed control, Tempo, Alignment, Short putts), save toggle (SwiftData), player screen with a `WKWebView` YouTube embed, "Start tempo" opening the Tempo sheet over the player.
@@ -188,58 +188,65 @@ App icon (Icon A, all sizes), launch screen, VoiceOver labels, Dynamic Type sani
 
 ---
 
-## 9. Decisions I need from you
+## 9. Decisions
 
-These aren't fully specified in the handoff. Each has my recommendation; reply with a number + "OK" or your alternative.
+Legend: ✅ decided · ❓ still needs your answer
 
-**Q1. "Plays like" distance.** The prototype hard-codes `distance + 2`. The designs show 15 ft at 1.2% uphill → 17 ft, and 10 ft uphill → 12 ft.
-→ *Recommend:* `playsLike = feet × (1 + uphill% / 10)`, rounded (downhill makes it shorter). This matches both design examples.
+**Q1. "Plays like" distance ✅ (proposed from research, please confirm)**
+Putting coaches use the rule of thumb *extra feet per 10 ft of putt = slope % × Stimp ÷ 10* (for example, a 2% uphill on a Stimp 9 green adds about 1.8 ft per 10 ft). That gives:
+```
+playsLike = feet × (1 + uphill% × stimp / 100)     // downhill: uphill% is negative
+clamp to ≥ 1 ft, round to whole feet (0.1 m when in metres)
+```
+Check against the designs at Stimp 10 (Medium): 15 ft at 1.2% uphill → 16.8 → **17 ft** ✓.
+Stimp comes from the Scan green-speed sheet, or from **Default green speed** in Settings for Quick Read (so that setting matters in Quick Read too). Simple physics models give a somewhat bigger uphill effect than this rule. It's a display figure that can be tuned after field testing.
 
-**Q2. Scan aim and curved line.** The S3 copy says Quick Read "gives you the same aim number", and the green speed picker suggests speed matters. The README doesn't say how.
-→ *Recommend:* Scan measures the average uphill % and side % along the ball→hole corridor from the mesh, computes the Tour Read aim, then scales it by green speed (× Stimp / 10: Slow 0.8, Medium 1.0, Fast 1.2). The curve is drawn on the mesh as a smooth arc from the ball, bending to the aim side, finishing in the hole. A full ball-roll physics simulation is possible later, but it would give numbers that differ from Quick Read.
+**Q2. Scan aim and green speed ✅ (proposed from research, please confirm)**
+Green-reading sources agree that **faster greens break more**: the ball rolls more slowly for longer, so gravity has more time to act. AimPoint, for example, assumes Stimp ~10 and moves the aim out for faster greens and in for slower ones. So:
+- Scan measures average uphill % and side % along the ball→hole corridor from the LiDAR mesh, then applies the **same Tour Read sum** as Quick Read (which keeps the S3 promise of "the same aim number").
+- The aim is then scaled by green speed: `aim × stimp / 10` → Slow (8) ×0.8, Medium (10) ×1.0, Fast (12) ×1.2. This is linear and conservative; real-world examples are steeper still, for example 6 in at Stimp 8 vs 14 in at Stimp 12.
+- **Quick Read uses the same scaling with the Default green speed** (default Medium = ×1.0), so the README test case still gives 16in R.
+- The curved line is drawn on the scanned surface as a smooth arc from the ball, starting toward the aim point and curling into the hole. It's a visual of the aim, not a ball-roll simulation (that could come later).
 
-**Q3. "Aimed" in Lay flat.** Where the distance came from the AR tap, use the ball→hole bearing. Where it was manual or walked off, "Aimed" just requires the phone to be held still and flat for ~1 s.
-→ *Recommend:* as described. OK?
+**Q3. "Aimed" in Lay flat ❓**
+On the Lay flat screen, "Aimed" means the phone's **top edge points at the hole**. The phone's sensors can tell when it's **flat** and **still**, but not where the hole is. Options:
+- **A (recommended for MVP):** trust the golfer. The screen says "TOP EDGE → HOLE". Once the phone is flat and has been held still for about 1 s, Flat ✓ and Aimed ✓ both tick, it turns green and reads. Simple and reliable.
+- **B:** a compass check. If the distance was measured with the camera tap, we know the hole's direction and compare it with the phone's compass heading, showing orange "↻ turn" until it's within ~10°. Phone compasses near the ground (magnetic cases, buggies, sprinkler pipes) can be off by more than that, so it may annoy more than help. Possible as a later upgrade.
 
-**Q4. Train scoring against real readings.** The guess chips are whole 1–4%, but sensors give decimals (for example 3.1%).
-→ *Recommend:* round the actual reading to the nearest whole % and clamp it to 1–4 for the verdict and points (design 7d: "You read 3%, it was 3.2%" = Spot on), while displaying the true decimal. Break counts as "Straight" if the side slope is under 0.5%. Hill counts as "Flat" if under 0.5%. Hill and aim are shown but not scored, as in the prototype.
+**Q4. Train scoring ✅**
+Round the measured slope to the nearest whole % (clamped 1–4) for the verdict and points; display the true decimal. Side slope under 0.5% = "Straight"; uphill under 0.5% = "Flat". Hill and aim are shown but not scored.
 
-**Q5. Light/dark mode.** The original brief asked for both; the final tokens are light only (camera screens are dark by nature).
-→ *Recommend:* light only for v1 (force `.light` outside camera screens). Dark mode would need a palette from your designer.
+**Q5. Light mode only for v1 ✅**
 
-**Q6. Drills content.** All titles and creators in the files are placeholders ("Coach Name", "Creator").
-→ *Recommend:* a bundled `drills.json` (YouTube ID, title, creator, category, duration). **I need the actual list of videos from you**, or I ship the 6 placeholders with dummy IDs until you send them. "Drill of the week" hero card: leave out (the README and prototype don't use it).
+**Q6. Drills ✅** Bundled `drills.json` with the six placeholder videos from the prototype for now. Real YouTube IDs come later.
 
-**Q7. What "Save" does on the Quick Read and Scan results.** Nothing in the designs shows a list of saved reads.
-→ *Recommend:* save to SwiftData now (no UI), toast "Saved"; a "Saved reads" screen later if you want one.
+**Q7. Save ✅** Saved on the device only (SwiftData), with a "Saved" confirmation. No saved-reads screen in v1.
 
-**Q8. Tempo full version.** The README points to design pack 10/11.
-→ *Recommend:* a segmented control inside the sheet, **Metronome | Drill | Session** (10a). Drill = 11b, all three lengths (10 ft 5 in · 20 ft 9 in · 30 ft 13 in), with "Start 20 ft". Session = T1 setup → 11d running (rep counter, "Rep done ✓", random order, call out distance). Fixed backswing lengths (the "calibrated in Settings" note has no Settings control in the designs).
+**Q8. Tempo ✅** Metronome only for MVP: pendulum, BACK/THROUGH labels, BPM 60–100 ± (default 76), Start/Stop, distinct sounds, haptics. Drill and Session are deferred.
 
-**Q9. Motion permission primer.** Only the camera primer (S6) is designed. Quick Read's AR tap needs the camera too; Walk it off needs Motion & Fitness.
-→ *Recommend:* reuse the S6 layout for motion, with your copy, or tell me to skip the primer and show the system prompt directly. **Please supply the copy if you want a primer.**
+**Q9. Motion permission primer ✅ — screen S7 (from your updated design pack)**
+- Illustration: green panel with a black phone and a lime ▲, label "PHONE LYING FLAT ON GREEN".
+- Title "Let your phone feel the slope". Body: "Quick Read uses motion sensors to measure tilt when your phone lies flat. Only used during a read — nothing leaves your phone."
+- Buttons "Allow motion" (green, primary) / "Not now".
+- Technical note: iOS doesn't ask permission for tilt (attitude) readings, only for step counting (Motion & Fitness), which "Walk it off" uses. So S7 shows **the first time Quick Read opens**, and "Allow motion" triggers the Motion & Fitness system prompt. "Not now" still allows reading slope; only "Walk it off" stays unavailable until permission is given.
+- Your screenshot shows S7, and S6 with a green "Allow camera" button, neither of which is in the zip I have. **If there's a newer design pack, please upload it** so I build from the latest version.
 
-**Q10. Pace calibration and exact Stimp.** Settings shows "Pace length 2.7 ft · Calibrate ›" and S2 shows "Enter exact Stimp ›", but neither flow is designed.
-→ *Recommend:* a simple ± stepper for pace length (2.0–3.5 ft, default 2.7) and a Stimp stepper (6–14) in v1. No walk-to-calibrate flow.
+**Q10. Pace length and Stimp ✅** Simple ± steppers: pace 2.0–3.5 ft (default 2.7), Stimp 6–14.
 
-**Q11. Stats extras.** The original brief also lists a trend chart and a round-history list; option 9a has a "Round history ›" row but no chart.
-→ *Recommend:* build 9a exactly (insight card, diverging bars for L→R, R→L, Uphill, Downhill, slope bands, distance bands) plus a simple round-history list behind "Round history ›". No trend chart in v1. Insight = the bucket with the largest average signed error, phrased like "You under-read left-to-right putts by about 30%".
+**Q11. Stats trend chart ❓**
+I'd left it out because the chosen Stats design (9a) has no chart. Only an alternative option (9b) shows one, so I'd be adapting its style. On reflection, though, the Home "Stats" tile already shows an accuracy figure ("71%"), so we need an accuracy number regardless (average round score over recent rounds). With that in place, a small trend chart (Swift Charts, accuracy over the last 7 rounds, styled like 9b) is cheap to add under the insight card. **Include it: yes or no?**
 
-**Q12. Repo and workflow.**
-- Bundle ID (e.g. `com.garethlloyd.greenread`) and Apple Team ID (or leave blank for you to set)?
-- Commit the generated `.xcodeproj` as well as `project.yml`? (Recommend: yes, so it opens without installing XcodeGen.)
-- Add a GitHub Actions macOS build so I can catch compile errors? (macOS minutes count against your GitHub plan.)
-- One branch + PR per milestone, or commit straight to `main`?
+**Q12. Repo and workflow ✅**
+Bundle ID `com.garethlloyd.greenread`; no Mac CI build; one branch + PR per milestone; commit the generated `.xcodeproj` alongside `project.yml` so it opens directly in Xcode.
 
-**Q13. Units default.** Feet by default, metres via Settings; the Train and Quick Read steppers work in whole feet (or 0.5 m when in metres).
-→ *Recommend:* as described.
+**Q13. Units ✅** Feet by default, metres in Settings.
 
 ---
 
 ## 10. Out of scope for v1 (unless you say otherwise)
 
-iPad, landscape, Apple Watch, accounts/cloud sync, sharing a scorecard (8d), drill recommendations from stats (8c/12c), the "Drill of the week" hero, ball-roll physics simulation, localisation beyond English (UK spelling as in the handoff: "colour", "practise").
+iPad, landscape, Apple Watch, Tempo backswing drill and practice session (10/11, T1, 11d), dark mode, accounts/cloud sync, sharing a scorecard (8d), drill recommendations from stats (8c/12c), the "Drill of the week" hero, ball-roll physics simulation, localisation beyond English (UK spelling as in the handoff: "colour", "practise").
 
 ---
 
-**Next step:** reply with approval (or changes) on sections 1–5 and answers to Q1–Q13. I'll then start M0 + M1 and push them to a branch for you to open in Xcode.
+**Next step:** confirm Q1 and Q2, answer Q3 and Q11, and upload a newer design pack if one exists. I'll then start M0 + M1 on branch `m0-m1-foundation` and open a PR for you to review in Xcode.
