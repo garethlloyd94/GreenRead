@@ -72,6 +72,13 @@ public struct AppFeature {
             case .home:
                 return .none
 
+            case let .path(.element(id, .stats(.delegate(.playTrainRound)))):
+                state.path.pop(from: id)
+                state.destination = .tool(
+                    ToolFeature.State(tool: .quickRead(QuickReadFeature.State(mode: .train(TrainFlow.State()))))
+                )
+                return .none
+
             case .path:
                 return .none
             }
@@ -163,6 +170,24 @@ extension AppFeature.State {
         case "scan": destination = .tool(.scan)
         case "settings": destination = .settings(SettingsFeature.State())
         case "stats": path.append(.stats(StatsFeature.State()))
+        case "quickRead.train", "train.guess", "train.reveal", "train.summary":
+            var train = TrainFlow.State()
+            let sample = TrainFlow.debugSamples
+            switch screen {
+            case "train.guess":
+                train.step = .guess(Guess.State(feet: 15, puttIndex: 2))
+            case "train.reveal":
+                train.results = Array(sample.prefix(3))
+                train.step = .reveal(Reveal.State(result: sample[2], puttNumber: 3))
+            case "train.summary":
+                train.results = sample
+                train.step = .summary(Summary.State(results: sample))
+            default:
+                break
+            }
+            var quickRead = QuickReadFeature.State(mode: .train(train))
+            quickRead.hasCheckedPermission = true
+            destination = .tool(ToolFeature.State(tool: .quickRead(quickRead)))
         case "tempo": destination = .tempo(TempoFeature.State())
         default: break
         }

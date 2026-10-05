@@ -128,6 +128,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "Models",
+                .product(name: "GreenReadCore", package: "GreenReadCore"),
                 .product(name: "SQLiteData", package: "sqlite-data"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
