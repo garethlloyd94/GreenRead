@@ -2,10 +2,25 @@
 
 **App:** GreenRead — "Find the line."
 **Platform:** Native iOS, SwiftUI, iOS 17+, iPhone only (portrait).
-**Frameworks:** SwiftUI · SwiftData · CoreMotion · ARKit/RealityKit · AVAudioEngine · Core Haptics · WebKit (YouTube player only).
-**Source of truth:** `design_handoff_putting_app/` — README spec, then `prototype/Putting App Prototype.dc.html`, then `reference/Putting App Design Pack.html` for screens the prototype covers lightly.
+**Frameworks:** SwiftUI · The Composable Architecture (TCA) · SQLiteData · Sharing · CoreMotion · ARKit/RealityKit · AVAudioEngine · Core Haptics · WebKit (YouTube player only).
+**Source of truth:** `docs/design/` — README spec, then `prototype/Putting App Prototype.dc.html`, then `reference/Putting App Design Pack.html` for screens the prototype covers lightly.
 
-Status: **REVISION 3 — all decisions made.** Designs: design pack 3 (`User_flow_and_screen_options_3.zip`). Visual version with every screen: https://claude.ai/artifact/2qBkK3YWoEtsbH4pab11FR
+Status: **REVISION 4 — architecture moved to TCA (see §0); all decisions made.** Designs: design pack 3 (`User_flow_and_screen_options_3.zip`). Visual version with every screen: https://claude.ai/artifact/2qBkK3YWoEtsbH4pab11FR
+
+---
+
+## 0. What changed in revision 4
+
+| Area | Rev 3 | Rev 4 | Why |
+|---|---|---|---|
+| State and navigation | One `@Observable AppState` router plus a view model per feature | TCA: a root `AppFeature` with `@Presents var destination` (an enum) and a `StackState` path; one `@Reducer` per feature | Navigation is modelled as state, so every route (including "Stats from the Train summary") is testable with `TestStore` |
+| Step machines | A `step` value inside each view model | A `@Reducer enum` per flow (`ReadFlow.Step`, `TrainFlow.Step`, `ScanFlow.Step`); each case is its own feature | Each step owns only the state it needs; invalid combinations can't be represented |
+| Persistence | SwiftData for everything | **SQLiteData** for records (rounds, putts, reads, saved videos); **`@Shared`** for settings and flags | SwiftData doesn't fit TCA's value-type state or its tests; SQLiteData works through `@Dependency(\.defaultDatabase)` and `@FetchAll` |
+| Services | Classes (`MotionService`, `TempoEngine`…) | `@DependencyClient` structs with live, preview and test values | Swap in scripted sensors in previews, tests and the Simulator |
+| Aim formatting | An `AimFormatter` environment value | Derived from `@Shared(.appSettings)` | One source of truth that both reducers and views read |
+| Permission primers | First-time flags | Driven by authorisation status from a `PermissionsClient` (`.notDetermined` → primer, `.denied` → Settings state) | No flags to get out of sync with iOS |
+| Tests | XCTest | Swift Testing + `TestStore` + `expectNoDifference` (CustomDump) | Exhaustive feature tests; clearer failure diffs |
+| Workflow | Cloud Linux, can't build iOS | Local Mac, Xcode 27, Xcode MCP connected | I can now build, run tests and catch compile errors myself |
 
 ---
 
@@ -25,46 +40,123 @@ A putting assistant used on the practice green: one-handed, often in bright sun.
 
 Navigation follows option **Nd**: no tab bar. Home shows the wordmark and tagline, then a **Play | Drills** segmented switch with a ⚙ button. Play is a list of tiles: Scan (hero), Quick Read, Tempo, Stats.
 
-Onboarding follows option **1b**: a single-page tour ("Four tools. Find the line."). Camera and motion permissions are asked in context the first time Scan or Quick Read opens, using the primer screen S6 before the system prompt.
+Onboarding follows option **1b**: a single-page tour ("Four tools. Find the line."). Camera and motion permissions are asked in context the first time Scan or Quick Read opens, using primer screens (S6 camera, S7 motion) before the system prompt.
 
 ---
 
 ## 2. Architecture
 
 ```
-GreenRead/                         ← repo root
-├─ GreenRead.xcodeproj            ← hand-written; GreenRead/ is a folder-synchronised group
-├─ GreenRead/                      ← app target
-│  ├─ App/                         GreenReadApp, RootView, AppState (router)
-│  ├─ DesignSystem/                Tokens (Color/Font/Radius/Shadow/Motion), components
-│  ├─ Features/
-│  │  ├─ Home/                     Header, Play tiles, Play|Drills switch
-│  │  ├─ Onboarding/               1b tour, permission primers
-│  │  ├─ QuickRead/                Measure, LayFlat, Result, Train (Guess/Reveal/Summary)
-│  │  ├─ Scan/                     Mark, Scanning, GreenSpeed, Result, edge states
-│  │  ├─ Stats/
-│  │  ├─ Tempo/                    Metronome, Drill, Session
-│  │  ├─ Drills/                   Feed, Player (WKWebView)
-│  │  └─ Settings/
-│  ├─ Services/                    MotionService, TempoEngine, Haptics, PedometerService,
-│  │                               ARMeasureService, GreenScanService, PermissionService
-│  ├─ Persistence/                 SwiftData models + ModelContainer
-│  └─ Resources/                   Fonts (Archivo, JetBrains Mono), Assets (icon), drills.json, sounds
-├─ Packages/GreenReadCore/         ← pure Swift package, no UIKit/ARKit
-│  ├─ AimCalculator                Tour Read maths + unit formatting
-│  ├─ SlopeReader                  attitude → uphill % / side % / break / hill + stability
-│  ├─ TrainScoring                 verdicts, points, tendency sentence
-│  ├─ StatsEngine                  breakdown buckets, insight, 3-round unlock
-│  └─ Tests/                       XCTest (includes README example 15 ft, 2% R→L, uphill → 16in R)
-└─ docs/                           this plan, design handoff copy
+GreenRead/                           ← repo root
+├─ GreenRead.xcodeproj               ← hand-written; thin app target
+├─ GreenRead/                        ← app target: @main, Info.plist, assets, bootstrap only
+│  └─ App/GreenReadApp.swift         prepareDependencies { bootstrapDatabase() }, Store(AppFeature)
+├─ Packages/GreenReadKit/            ← local SPM package: everything except the @main entry
+│  ├─ DesignSystem                   tokens, components, fonts (Bundle.module), gallery
+│  ├─ Models                         SQLiteData @Table types, migrations, bootstrapDatabase,
+│  │                                 SharedKeys (.appSettings, .hasSeenOnboarding, .tempoBPM)
+│  ├─ Clients                        @DependencyClient interfaces + live values:
+│  │                                 MotionClient, PedometerClient, PermissionsClient,
+│  │                                 ARMeasureClient, GreenScanClient, TempoClient,
+│  │                                 HapticsClient, DrillCatalogClient
+│  ├─ AppFeature                     root reducer: Home, Destination, Path
+│  ├─ HomeFeature                    Play tiles, Play|Drills switch, DrillsFeed
+│  ├─ OnboardingFeature              1b tour
+│  ├─ PermissionsFeature             S6/S7 primers + denied state
+│  ├─ QuickReadFeature               ReadFlow, TrainFlow, Measure, LayFlat, Result, Guess…
+│  ├─ ScanFeature                    ScanFlow, Mark, Scanning, GreenSpeed, Result, edge states
+│  ├─ StatsFeature · TempoFeature · DrillsFeature (Player) · SettingsFeature
+│  └─ Tests/                         one test target per feature (Swift Testing + TestStore)
+├─ Packages/GreenReadCore/           ← pure Swift, no dependencies, no UIKit/ARKit
+│  ├─ TourRead, Units, GreenSpeed    (done in M0)
+│  ├─ SlopeReader                    attitude samples → stability state + averaged slope
+│  ├─ TrainScoring · StatsEngine
+│  └─ Tests/                         Swift Testing
+└─ docs/
 ```
 
-- **State:** the `@Observable` pattern (iOS 17) with one `AppState` (tab, active modal, sheets, navigation path) and a view model per feature. Each feature's step machine mirrors the prototype's `step` values (`measure → guess → flat → tr-reveal → tr-summary`, `scan-mark → scan-scan → scan-speed → scan-result`).
-- **Pure logic lives in `GreenReadCore`.** It has no Apple UI dependencies, so it is unit-testable and can be built and tested from Linux with the Swift toolchain. That means I can prove the maths and scoring here, even though this environment can't build the iOS app.
-- **Persistence (SwiftData):** `UserSettings`, `SavedVideo`, `TrainRound` → `TrainPutt[]`, `SavedRead` (Quick Read or Scan result). Settings could use `@AppStorage`; I'll use SwiftData for everything except the onboarding-seen flag.
+### 2.1 State: TCA
+
+- **One root `AppFeature`.** `HomeFeature` is scoped in permanently; everything else is either a **destination** (modal) or on the **path** (pushed).
+- **Every action is named after what the user did** (`scanTileTapped`, `closeButtonTapped`) or what came back (`motionUpdate`, `scanEvent`). Children talk to parents through `delegate` actions, never by reaching into parent state.
+- **Child dismissal:** `@Dependency(\.dismiss)`, for the ✕ button and "Not now".
+- **Dependencies are controlled:** `\.continuousClock`, `\.date.now`, `\.uuid`, `\.openURL` (for "Open Settings") are never called uncontrolled.
+
+### 2.2 Navigation map
+
+```swift
+@Reducer struct AppFeature {
+  @ObservableState struct State {
+    var home = HomeFeature.State()
+    var path = StackState<AppPath.State>()
+    @Presents var destination: AppDestination.State?
+  }
+}
+
+@Reducer enum AppPath {            // pushed full-screen with ‹ back (README: "Stats and video player push")
+  case stats(StatsFeature)
+  case player(PlayerFeature)
+}
+
+@Reducer enum AppDestination {
+  case onboarding(OnboardingFeature)   // fullScreenCover on launch when !hasSeenOnboarding
+  case tool(ToolFeature)               // fullScreenCover: Scan / Quick Read modal
+  case tempo(TempoFeature)             // sheet
+  case settings(SettingsFeature)       // sheet
+}
+```
+
+- **`ToolFeature`** owns the shared modal chrome (✕ and the Scan ↔ Quick Read switcher pill). Its state is `var tool: Tool.State`, where `@Reducer enum Tool { case scan(ScanFlow), quickRead(QuickReadFeature) }`. Switching tools replaces the case, so the outgoing flow's effects (AR session, motion updates) are cancelled automatically.
+- **`QuickReadFeature`** holds the Read | Train switch: `@Reducer enum Mode { case read(ReadFlow), train(TrainFlow) }`.
+- **Step machines are enum reducers, not navigation stacks.** Steps replace each other in place with the prototype's transitions; there's no back-swipe between steps.
+  - `ReadFlow.Step`: `primer(MotionPrimer) → measure(Measure) → layFlat(LayFlat) → result(ReadResult)`
+  - `TrainFlow.Step`: `primer → measure → guess(Guess) → layFlat(hidden) → reveal(Reveal) → summary(Summary)`. The round (`IdentifiedArrayOf<TrainPutt>`) lives on `TrainFlow.State`, not in a step.
+  - `ScanFlow.Step`: `noLiDAR | cameraPrimer → mark(Mark) → scanning(Scanning) → result(ScanResult)`. The green speed sheet is `@Presents var greenSpeed` on `ScanFlow`. Poor scan (S4) is a step-local state; bright sun (S5) is a flag driven by `GreenScanClient` events.
+- **Cross-tree routes go through the root via delegates:**
+  - Train Summary "See stats" → `.delegate(.showStats)` → `AppFeature` sets `destination = nil` and appends `.stats` to the path.
+  - S3 "Use Quick Read instead" → `ToolFeature` swaps `tool` to `.quickRead`.
+  - Player "Start tempo" → `PlayerFeature` has its own `@Presents var tempo: TempoFeature.State?`, so the sheet appears over the player as designed.
+- **Views:** `NavigationStack(path: $store.scope(state: \.path, action: \.path))` at the root; `.fullScreenCover(item: $store.scope(state: \.destination?.tool, action: \.destination.tool))` and so on for each destination. Enum steps are rendered with `switch store.case { … }`.
+
+### 2.3 Sensors and the store
+
+High-rate data never goes through the store one sample at a time.
+- **`MotionClient`** streams attitude at 60 Hz into `SlopeReader` (a pure state machine in Core) inside the client's effect. The reducer only gets **state changes** (`.tilted`, `.flatAndStill`, `.reading(progress)`, `.done(SlopeReading)`) plus a throttled (~10 Hz) live value for the orange/green screen.
+- **`GreenScanClient`** owns the `ARSession`. The `ARView` representable is handed the session to display, and the reducer receives throttled `ScanEvent`s (coverage %, gap prompts, light estimate, quality), plus the final `GreenSurface` height field.
+- **`TempoClient`** owns `AVAudioEngine`. Beats are scheduled on audio time and the pendulum animates from the client's `AsyncStream<BeatPhase>`. The reducer only handles Start/Stop/BPM.
+- Each client has a **`previewValue` that scripts realistic data** (a phone being laid flat, a scan filling up, beats at the current BPM). Previews and the Simulator can run every flow end to end, and a DEBUG setting switches live clients to scripted ones.
+
+### 2.4 Persistence
+
+- **`@Shared` (Sharing)** for small values:
+  - `@Shared(.appSettings)`: a `Codable` `AppSettings` struct in `fileStorage`. Units, aim unit, default Stimp, pace length, haptics, sounds.
+  - `@Shared(.hasSeenOnboarding)` and `@Shared(.tempoBPM)` (the Home Tempo tile shows the live BPM): both `appStorage`.
+- **SQLiteData** for records:
+  - Tables: `trainRound`, `trainPutt`, `savedRead`, `savedVideo`.
+  - `bootstrapDatabase()` runs in `GreenReadApp.init` via `prepareDependencies`, with migrations from day one and `eraseDatabaseOnSchemaChange` in DEBUG.
+  - Stats reads with `@FetchAll` in `StatsFeature.State`; the Home Stats tile uses `@FetchOne` (round count and latest accuracy).
+  - The maths stays in `StatsEngine`; SQL only filters and sorts.
+- **Removes:** the SwiftData `AppSettings` `@Model` and `.modelContainer` from M0. There are no installs to migrate yet.
+
+### 2.5 Unchanged from rev 3
 - **No backend, no account, no analytics.** Fully offline except YouTube playback. The S6 copy promises "Nothing is recorded or uploaded."
-- **Fonts:** Archivo (variable, with a width axis) and JetBrains Mono, both under the OFL licence and bundled. Archivo's width (110–120%) is applied through `UIFontDescriptor` variation axes, wrapped in a `Font.archivo(size:weight:width:)` helper.
-- **Project file:** a small hand-written `.xcodeproj` using Xcode 16 folder-synchronised groups, so every file under `GreenRead/` is included automatically and the project file rarely changes. (XcodeGen was the original plan, but it can't be installed in the cloud environment; this needs no extra tools on your Mac either.)
+- **Fonts:** Archivo (variable, width axis) and JetBrains Mono, OFL, bundled. They move into the `DesignSystem` target and register from `Bundle.module`.
+- **Core stays dependency-free.** TCA, Sharing and SQLiteData are only linked by `GreenReadKit`.
+
+### 2.6 Packages and settings
+- `swift-composable-architecture` 1.x (brings Sharing, Dependencies, CasePaths, SwiftNavigation and IdentifiedCollections), `sqlite-data` 1.x, `swift-custom-dump` (tests only).
+- Test targets link only `DependenciesTestSupport` and `CustomDump`, never `Dependencies` or `ComposableArchitecture` directly. Those come transitively and would double-link.
+- Swift 6 language mode for `GreenReadKit` (the app target follows). iOS 17 deployment target stays: TCA's observation works natively on 17, so there's no Perception back-port.
+
+### 2.7 Colours in an asset catalog
+- **Move every `GRColor` hex value** into `DesignSystem/Resources/Colors.xcassets` as named colour sets. Use Xcode's generated `ColorResource` symbols, so `GRColor.ink` becomes `Color(.ink)`, with no string names to mistype.
+- **`GRColor` stays as the semantic API.** Call sites don't change.
+- **Why:**
+  - **Increase Contrast variants per colour.** These are built into the asset catalog, matter for bright sun, and pair with S5.
+  - **Display P3 for `lime`.** The AR overlay is meant to pop on OLED.
+  - **Dark mode later is a data change, not a code change.**
+  - **Same colours outside SwiftUI.** RealityKit materials and UIKit get them via `UIColor(resource:)`.
+- **Hex init:** `Color(hex:)` stays only for preview-only stripes, or is removed.
 
 ---
 
@@ -89,7 +181,7 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 - uphill % = tan(pitch) × 100 (positive = uphill toward the hole)
 - side % = tan(roll) × 100. The break goes toward the low side: if the left side is low, the break is **R→L**.
 - Flat + aimed is detected when the phone is near-flat (tilt under ~6°) and attitude variance stays below a threshold for ~1 s. Then readings are averaged over a short window ("Reading…") and the flow auto-advances.
-- "Aimed": CoreMotion can't know where the hole is. The plan is to take the heading of the phone's top edge and compare it with the ball→hole bearing captured by the AR measure step. When the distance was entered manually or walked off, there's no bearing, so "Aimed" means "the user has held it still" (see Q3).
+- "Aimed": trust the golfer (Q3, option A). "Flat and held still for ~1 s" ticks both Flat ✓ and Aimed ✓.
 
 **Train scoring** (from the prototype logic):
 - Spot on = slope matches and direction correct · Wrong way = direction wrong · Under-read = guessed slope too low · Over-read = guessed slope too high
@@ -130,48 +222,95 @@ Example: 15 ft → 5 yd → 9 in → ×2 = 18 → uphill −2 → **16 in R**. T
 
 Each milestone ends with a commit on a feature branch and a short note on what to check in Xcode or the Simulator.
 
-**M0 — Project skeleton**
-Xcode project (folder-synchronised), app target and local `GreenReadCore` package (Tour Read maths, units and formatting pulled forward from M3 so the tests exist from day one), SwiftData container, bundled fonts, copy of the design handoff in `docs/design/`, CI-free `swift test` for Core, `.gitignore`, README describing how to build.
+**M0 — Project skeleton** ✅ (merged, PR #1)
+Xcode project (folder-synchronised), app target and local `GreenReadCore` package (Tour Read maths, units, formatting), bundled fonts, design handoff in `docs/design/`, `swift test` for Core, README.
 
-**M1 — Design system**
-Colour/type/radius/shadow/motion tokens; `GreenReadWordmark` (text, not an image); components: `PillButton` (go, neutral, secondary), `Chip`, `PillSegmentedControl`, `ResultCard`, `BottomCard`, `CircleIconButton`, `MonoLabel`, `VerdictBanner`, `DivergingBar`, `VideoRow`. Includes a DEBUG-only component gallery screen for checking against the design pack.
+**M1 — Design system** ✅ (merged, PR #1)
+Tokens; `Wordmark`; `PillButton`, `Chip`, `PillSegmentedControl`, cards, `VerdictBanner`, `DivergingBar`, `VideoRow`, `PopIn`; DEBUG component gallery.
+
+**M1.5 — Architecture foundation** (new)
+- **`GreenReadKit` package:** create it and move `DesignSystem` into it, with fonts as package resources registered from `Bundle.module`.
+- **Colours:** move them into an asset catalog in the `DesignSystem` target (see §2.7).
+- **Dependencies:** add TCA, SQLiteData and CustomDump.
+- **Persistence:** `Models` target with `bootstrapDatabase()`, the first migration (`trainRound`, `trainPutt`, `savedRead`, `savedVideo`) and the `SharedKey`s. Delete the SwiftData `AppSettings` and `.modelContainer`.
+- **Clients:** `Clients` target with every `@DependencyClient` interface. Live values are stubbed with `unimplemented` until their milestone; preview values are scripted.
+- **Navigation skeleton:**
+  - `AppFeature` with `AppDestination` and `AppPath`.
+  - `ToolFeature` with the switcher pill and placeholder Scan / Quick Read flows.
+  - Every route reachable: tiles → modal, ⚙ → Settings, Tempo tile → sheet, Stats tile → push.
+- **Tests:**
+  - Core tests: migrate XCTest → Swift Testing.
+  - `BaseSuite` with `.dependencies { try $0.bootstrapDatabase() }`.
+  - `TestStore` tests for every route in §2.2, including Summary → Stats.
 
 **M2 — Home + Settings + Onboarding**
-Play | Drills switch, tiles (the Tempo subtitle shows live BPM; the Stats tile shows "x/3 rounds" or the accuracy figure), Settings sheet with all controls and the Rules of Golf box, onboarding 1b, and an `AimFormatter` environment value so changing the aim unit updates every screen.
+- **Home:** Play | Drills switch and tiles. The Tempo subtitle reads `@Shared(.tempoBPM)`; the Stats tile uses `@FetchOne` for "x/3 rounds" or the accuracy figure.
+- **Settings:** the sheet binds straight to `@Shared(.appSettings)` (all controls, Rules of Golf box).
+- **Onboarding:** 1b, shown on launch via `@Shared(.hasSeenOnboarding)`.
+- **Aim formatting:** aim and distance formatting read the shared settings, so changing the unit updates every screen.
 
 **M3 — Quick Read: Read**
-`AimCalculator` + tests; `MotionService` (CMMotionManager, 60 Hz, stability filter); measure options (AR raycast tap via ARKit, any iPhone; pedometer walk-off with pace length; manual stepper); lay-flat state screen; result card with the pop animation and working panel; Save → `SavedRead`.
+- **Core:** `SlopeReader` (stability, averaging, sign conventions), with tests.
+- **Clients:** live `MotionClient` (CMMotionManager, 60 Hz, events only as in §2.3) and `PermissionsClient`.
+- **Flow:** S7 primer and the denied state, then `ReadFlow` steps.
+- **Measure:** `ARMeasureClient` raycast tap (any iPhone), `PedometerClient` walk-off with pace length, manual stepper.
+- **Screens:** the lay-flat state screen, and the result card with the pop animation and working panel.
+- **Save:** Save → `savedRead` row.
+- **Tests:** `TestStore` tests drive the whole flow with a scripted `MotionClient`.
 
 **M4 — Quick Read: Train + Stats**
-Guess form, hidden lay-flat, reveal, summary, `TrainScoring` + `StatsEngine` + tests, SwiftData rounds, Stats locked/unlocked, Play again, Stats from summary.
+- **Flow:** `TrainFlow` (guess, hidden lay-flat, reveal, summary). `TrainScoring` + `StatsEngine` in Core, with tests.
+- **Persistence:** the round is written on summary.
+- **Stats:** `StatsFeature` with `@FetchAll`, locked/unlocked states and the Swift Charts trend.
+- **Routes:** Play again; Stats from summary via delegate.
 
 **M5 — Tempo**
-`TempoEngine` on AVAudioEngine with sample-accurate scheduling (buffers scheduled ahead against `AVAudioTime`, not timers), distinct back and through sounds, Core Haptics synced to the beat, pendulum driven by the audio clock, ± BPM in steps of 1 (60–100). Metronome only for MVP; Drill and Session are deferred (Q8). Background audio, so it keeps playing with the phone in a pocket.
+- **Engine:** live `TempoClient` on AVAudioEngine with sample-accurate scheduling (buffers scheduled ahead against `AVAudioTime`, not timers) and distinct back and through sounds.
+- **Feel:** `HapticsClient` (Core Haptics) synced to the beat; the pendulum is driven by the client's beat stream.
+- **Controls:** ± BPM in steps of 1 (60–100), persisted in `@Shared(.tempoBPM)`. Metronome only (Q8).
+- **Background audio:** keeps playing with the phone in a pocket.
 
 **M6 — Drills**
-`drills.json` catalogue, category chips (All, Saved, Green reading, Speed control, Tempo, Alignment, Short putts), save toggle (SwiftData), player screen with a `WKWebView` YouTube embed, "Start tempo" opening the Tempo sheet over the player.
+- **Catalogue:** `DrillCatalogClient` loads the bundled `drills.json`. Category chips; save toggle writes `savedVideo`; the Saved chip uses `@FetchAll`.
+- **Player:** `PlayerFeature` pushed on `AppPath` (`WKWebView` YouTube embed). "Start tempo" presents Tempo over the player.
 
 **M7 — Scan (LiDAR)**
-Device gate on `ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh)` (no LiDAR → S3 → Quick Read). Mark ball and hole by raycast to anchors, scene-reconstruction mesh, coverage tracking along a ball→hole corridor (lime paint overlay, % ring, gap prompts), poor-scan detection, a bright-sun banner from ARKit light estimation, a height field sampled from the mesh, slope along the line, aim (see Q2), a curved line rendered in RealityKit (7pt lime) plus a dashed straight line and aim ring, and the result card.
+- **Gate:** live `GreenScanClient` gates on `supportsSceneReconstruction(.mesh)`; no LiDAR → S3 → "Use Quick Read" swaps the tool.
+- **Scanning:**
+  - S6 camera primer.
+  - Mark ball and hole by raycast to anchors.
+  - Scene-reconstruction mesh with coverage tracking along the ball→hole corridor: lime paint, % ring, gap prompts.
+  - Poor-scan detection, and the bright-sun flag from light estimation.
+- **Maths:** the height field becomes slope along the line, then aim (Q2), in Core.
+- **Rendering:** the curved line in RealityKit (7pt lime), plus a dashed straight line, aim ring and the result card. Green speed sheet as `@Presents`.
 
 **M8 — Polish and ship-readiness**
-App icon (Icon A, all sizes), launch screen, VoiceOver labels, Dynamic Type sanity, haptics audit, edge cases (permission denied, interruptions, phone calls during Tempo), App Store privacy strings (`NSCameraUsageDescription`, `NSMotionUsageDescription`), TestFlight checklist.
+App icon (Icon A), launch screen, VoiceOver labels, Dynamic Type sanity, haptics audit, edge cases (permission denied, interruptions, phone calls during Tempo), App Store privacy strings (`NSCameraUsageDescription`, `NSMotionUsageDescription`), TestFlight checklist.
 
 ---
 
 ## 6. Testing
 
-- **`GreenReadCore` (XCTest):** aim maths (README example plus edge cases: 3 ft, 60 ft, 0% slope, downhill), unit formatting (cups rounded to 0.5, balls to integers, metres), slope sign conventions, verdicts and points (every branch from the prototype), tendency text, stats buckets and unlock.
-- **App:** view-model unit tests with a mock `MotionService` (feeding scripted attitude) and an in-memory SwiftData store, plus SwiftUI previews for every state.
+- **`GreenReadCore` (Swift Testing):**
+  - aim maths: the README example plus 3 ft, 60 ft, 0% slope and downhill
+  - unit formatting
+  - slope sign conventions and `SlopeReader` stability
+  - verdicts and points, every branch
+  - tendency text, stats buckets and unlock
+- **Features (Swift Testing + `TestStore`):**
+  - Exhaustive tests per reducer, inheriting from `BaseSuite`: database bootstrapped, `\.uuid = .incrementing`, `\.continuousClock = TestClock()`.
+  - Sensors come from scripted client values, so whole flows (lay flat → reading → result) run in milliseconds.
+  - Failures use `expectNoDifference`; seed rows use negative `UUID(-n)` ids.
+- **Previews:** every step and state, via the `.dependencies` preview trait with scripted clients and a seeded database.
 - **On device (you):** a short field-test checklist per milestone. Sensors, AR and audio timing can only be verified on a real iPhone (a LiDAR model for Scan).
 
 ---
 
 ## 7. Environment and workflow
 
-- I write the code here (cloud Linux). **I can't build or run the iOS app in this environment.** You build and run it in Xcode 15+ on a Mac and report back any compiler errors or behaviour issues.
-- To shorten that loop: (a) all maths and logic sit in `GreenReadCore`, which I can compile and test here if I install the Swift Linux toolchain; (b) optionally, a GitHub Actions workflow on a `macos` runner that runs `xcodebuild build test` on every push, so I can see compile errors myself (see Q12).
-- Branch per milestone, with a PR into `main` if you want reviews (see Q12).
+- **Local:** I now work on your Mac with Xcode 27. The Xcode MCP bridge (`xcrun mcpbridge`) is connected, so I build, run tests and read diagnostics myself, and you focus on device testing.
+- **Core:** `GreenReadCore` and `GreenReadKit` tests also run with `swift test` / `xcodebuild test`.
+- **Branches:** one branch + PR into `master` per milestone (Q12).
 
 ---
 
@@ -179,18 +318,19 @@ App icon (Icon A, all sizes), launch screen, VoiceOver labels, Dynamic Type sani
 
 | Risk | Mitigation |
 |---|---|
-| Phone-flat slope accuracy (sensor bias, case on the back) | Average over a stable window; optional "calibrate on a flat surface" offset later (not in the designs, so not in v1 unless you ask) |
-| "Aimed" detection without a known hole direction | Use the AR-measured bearing when available (Q3) |
+| Phone-flat slope accuracy (sensor bias, case on the back) | Average over a stable window; optional "calibrate on a flat surface" offset later (not in v1 unless you ask) |
 | Scan is the largest and least certain piece (mesh noise on grass, sub-degree slopes) | Build it last; keep a straight-line/average-slope fallback; tune on a real green |
-| Tempo timing drift | AVAudioEngine sample-time scheduling; UI follows the audio clock |
-| YouTube embed restrictions | Use `youtube-nocookie` embeds with `playsinline`; some creators disable embedding, so curate around that |
-| No Mac in this environment | Logic package tested here; optional macOS CI |
+| Tempo timing drift | AVAudioEngine sample-time scheduling; UI follows the audio clock, not the store |
+| Flooding the store with sensor data (60 Hz motion, AR frames) | Clients emit state changes and throttled values only (§2.3) |
+| ARKit/RealityKit objects aren't `Sendable` and don't fit value-type state | They stay inside `GreenScanClient`; state holds only plain values (`GreenSurface`, anchors as `SIMD3<Float>`) |
+| TCA learning curve and compile times | Feature-per-target modules so previews build only what they need |
+| YouTube embed restrictions | `youtube-nocookie` embeds with `playsinline`; curate around creators who disable embedding |
 
 ---
 
 ## 9. Decisions
 
-All 13 questions are decided.
+All 18 questions are decided (Q17–Q18 added in revision 4).
 
 **Q1. "Plays like" distance ✅**
 `playsLike = max(1, round(feet × (1 + uphill% × stimp / 100)))`, shorter when downhill (coaches' rule: extra feet per 10 ft = slope % × Stimp ÷ 10). At Medium: 15 ft at 1.2% uphill → 17 ft, matching the designs. Quick Read uses the Default green speed from Settings. Tune after field testing.
@@ -208,7 +348,7 @@ Round the measured slope to the nearest whole % (clamped 1–4) for the verdict 
 
 **Q6. Drills ✅** Bundled `drills.json` with the six placeholder videos from the prototype for now. Real YouTube IDs come later.
 
-**Q7. Save ✅** Saved on the device only (SwiftData), with a "Saved" confirmation. No saved-reads screen in v1.
+**Q7. Save ✅** Saved on the device only (SQLiteData, `savedRead` table), with a "Saved" confirmation. No saved-reads screen in v1.
 
 **Q8. Tempo ✅** Metronome only for MVP: pendulum, BACK/THROUGH labels, BPM 60–100 ± (default 76), Start/Stop, distinct sounds, haptics. Drill and Session are deferred.
 
@@ -237,6 +377,12 @@ Bundle ID `com.garethlloyd.greenread`; no Mac CI build; one branch + PR per mile
 
 **Interpretation noted during M0:** Read mode uses the side slope rounded to the nearest whole % in the Tour Read sum (as design 5a does: 2.1% shown, "× 2% slope" in the working), with the true decimal shown on the card.
 
+**Q17. Tempo when the sheet closes ✅**
+Closing the Tempo sheet stops the metronome. Stop lives on the sheet, and background audio still covers the phone going into a pocket with the sheet open. `TempoClient`'s effect is tied to `TempoFeature`, so dismissing it cancels playback.
+
+**Q18. Persistence swap ✅**
+SwiftData is replaced: SQLiteData for records and `@Shared` for settings (§2.4). Nothing has shipped, so there's no migration.
+
 ---
 
 ## 10. Out of scope for v1 (unless you say otherwise)
@@ -245,4 +391,4 @@ iPad, landscape, Apple Watch, Tempo backswing drill and practice session (10/11,
 
 ---
 
-**Status:** M0 + M1 in progress on branch `m0-m1-foundation`.
+**Status:** M0 + M1 merged. Next: M1.5 (architecture foundation), revision 4 approved.
