@@ -79,6 +79,7 @@ let package = Package(
                 "DesignSystem",
                 "DrillsFeature",
                 "Models",
+                .product(name: "SQLiteData", package: "sqlite-data"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
@@ -151,6 +152,13 @@ let package = Package(
             name: "AppFeatureTests",
             dependencies: [
                 "AppFeature",
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "SettingsFeatureTests",
+            dependencies: [
+                "SettingsFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
             ]
         ),

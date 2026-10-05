@@ -110,6 +110,8 @@ public struct VideoRow: View {
 
 /// Green on/off switch from Settings (46 × 28).
 public struct GRToggleStyle: ToggleStyle {
+    public init() {}
+
     public func makeBody(configuration: Configuration) -> some View {
         Button {
             withAnimation(.easeOut(duration: 0.18)) { configuration.isOn.toggle() }
