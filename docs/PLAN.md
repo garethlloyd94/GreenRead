@@ -228,12 +228,12 @@ Xcode project (folder-synchronised), app target and local `GreenReadCore` packag
 **M1 — Design system** ✅ (merged, PR #1)
 Tokens; `Wordmark`; `PillButton`, `Chip`, `PillSegmentedControl`, cards, `VerdictBanner`, `DivergingBar`, `VideoRow`, `PopIn`; DEBUG component gallery.
 
-**M1.5 — Architecture foundation** (new)
+**M1.5 — Architecture foundation**
 - **`GreenReadKit` package:** create it and move `DesignSystem` into it, with fonts as package resources registered from `Bundle.module`.
 - **Colours:** move them into an asset catalog in the `DesignSystem` target (see §2.7).
 - **Dependencies:** add TCA, SQLiteData and CustomDump.
 - **Persistence:** `Models` target with `bootstrapDatabase()`, the first migration (`trainRound`, `trainPutt`, `savedRead`, `savedVideo`) and the `SharedKey`s. Delete the SwiftData `AppSettings` and `.modelContainer`.
-- **Clients:** `Clients` target with every `@DependencyClient` interface. Live values are stubbed with `unimplemented` until their milestone; preview values are scripted.
+- **Clients:** `Clients` target with `PermissionsClient` (live). The other clients (Motion, Pedometer, ARMeasure, GreenScan, Tempo, Haptics, DrillCatalog) land with the milestone that first uses them, so their interfaces are shaped by real use.
 - **Navigation skeleton:**
   - `AppFeature` with `AppDestination` and `AppPath`.
   - `ToolFeature` with the switcher pill and placeholder Scan / Quick Read flows.

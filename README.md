@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Xcode 16 or later (the project uses folder-synchronised groups, so new files under `GreenRead/` are picked up automatically)
+- Xcode 16 or later (Swift 6). Swift packages resolve on first open.
 - iOS 17 device or simulator. Sensors (Quick Read), AR (Scan, LiDAR iPhones only) and audio timing (Tempo) need a real iPhone.
 
 ## Build and run
@@ -16,30 +16,39 @@
 2. Select the **GreenRead** target → *Signing & Capabilities* → choose your Team. Bundle ID: `com.garethlloyd.greenread`.
 3. Pick an iPhone simulator or your device and press Run.
 
-In debug builds the first screen has an **Open component gallery** button showing every design-system component.
+In debug builds Home has a **Component gallery** link showing every design-system component.
 
 ## Tests
 
-The Tour Read maths, unit formatting and other pure logic live in the `GreenReadCore` Swift package, with unit tests.
+All tests use Swift Testing.
 
-```sh
-cd Packages/GreenReadCore
-swift test
-```
+- **`GreenReadCore`** — Tour Read maths, unit formatting and other pure logic:
+  ```sh
+  cd Packages/GreenReadCore && swift test
+  ```
+- **`GreenReadKit`** — TCA feature tests (`TestStore`, every navigation route) and database tests. iOS-only, so run on a simulator:
+  ```sh
+  cd Packages/GreenReadKit
+  xcodebuild test -scheme GreenReadKit-Package -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -skipMacroValidation
+  ```
+  Or open `Packages/GreenReadKit/Package.swift` in Xcode and press ⌘U.
 
-Or in Xcode: open `Packages/GreenReadCore/Package.swift` and press ⌘U.
+## Architecture
 
-## Layout
+The Composable Architecture (TCA), SQLiteData for records and `@Shared` (Sharing) for settings. See [`docs/PLAN.md` §2](docs/PLAN.md#2-architecture) for the navigation map.
 
 ```
 GreenRead.xcodeproj/
-GreenRead/                 app target (synchronised folder)
-  App/                     app entry, root view
-  DesignSystem/            colour, type, metrics, components, debug gallery
-  Persistence/             SwiftData models
-  Resources/               fonts (Archivo, JetBrains Mono — SIL OFL), asset catalog
-Packages/GreenReadCore/    pure Swift logic + tests (no UIKit)
-docs/                      plan and design handoff
+GreenRead/                   thin app target: @main, Info.plist settings, app icon
+Packages/GreenReadKit/       everything else, one module per area
+  DesignSystem/              tokens, components, fonts (SIL OFL), Colors.xcassets, debug gallery
+  Models/                    SQLiteData tables + migrations, @Shared keys (settings, onboarding, tempo)
+  Clients/                   @DependencyClient sensor/permission clients
+  AppFeature/                root reducer: Home + destination + path
+  HomeFeature, OnboardingFeature, QuickReadFeature, ScanFeature, ToolFeature,
+  StatsFeature, TempoFeature, DrillsFeature, SettingsFeature
+Packages/GreenReadCore/      pure Swift logic + tests (no dependencies, no UIKit)
+docs/                        plan and design handoff
 ```
 
 Fonts: Archivo and JetBrains Mono are bundled under the SIL Open Font License 1.1 (licences alongside the font files).
