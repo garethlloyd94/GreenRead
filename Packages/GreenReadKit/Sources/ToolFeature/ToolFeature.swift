@@ -108,7 +108,7 @@ public struct ToolView: View {
                         .gr(.button)
                         .foregroundStyle(GRColor.ink)
                         .padding(.horizontal, 18)
-                        .frame(height: GRMetrics.minTapTarget)
+                        .frame(minHeight: GRMetrics.minTapTarget)
                         .background(Capsule().fill(.white))
                 }
                 .accessibilityLabel("Switch tool")

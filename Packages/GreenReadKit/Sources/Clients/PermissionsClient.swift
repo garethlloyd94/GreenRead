@@ -46,8 +46,11 @@ extension PermissionsClient: DependencyKey {
                     let manager = CMMotionActivityManager()
                     let now = Date()
                     manager.queryActivityStarting(from: now, to: now, to: .main) { _, _ in
-                        continuation.resume(returning: CMMotionActivityManager.authorizationStatus() == .authorized)
-                        _ = manager
+                        // Nothing else holds the manager, and a deallocated manager never calls
+                        // back. Using it here keeps it alive until the golfer answers the prompt.
+                        withExtendedLifetime(manager) {
+                            continuation.resume(returning: CMMotionActivityManager.authorizationStatus() == .authorized)
+                        }
                     }
                 }
             }

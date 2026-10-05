@@ -68,7 +68,7 @@ public struct LabeledValue: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label).gr(.labelSmall).foregroundStyle(labelColour)
             Text(value)
-                .font(GRFont.archivo(valueSize, weight: 800))
+                .grFont(.archivo(valueSize, weight: 800))
                 .foregroundStyle(valueColour)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -98,9 +98,11 @@ public struct AimNumber: View {
     public var size: CGFloat = 56
     public var colour: Color = GRColor.green
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     public var body: some View {
         composed
-            .tracking(size * -0.02)
+            .tracking(scaledSize * -0.02)
             .foregroundStyle(colour)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
@@ -109,11 +111,15 @@ public struct AimNumber: View {
 
     /// Value and side at full size, unit at 45%.
     private var composed: Text {
-        let number = GRFont.archivo(size, weight: 800, width: 115)
-        let unitFont = GRFont.archivo(size * 0.45, weight: 800, width: 110)
+        let number = GRFont.archivo(scaledSize, weight: 800, width: 115)
+        let unitFont = GRFont.archivo(scaledSize * 0.45, weight: 800, width: 110)
         let unitText = aim.unit == "in" ? "in" : " \(aim.unit)"
         let sideText = aim.side.isEmpty ? "" : " \(aim.side)"
         return Text(aim.value).font(number) + Text(unitText).font(unitFont) + Text(sideText).font(number)
+    }
+
+    private var scaledSize: CGFloat {
+        GRFont.scaledSize(size, for: dynamicTypeSize)
     }
 
     public init(
@@ -154,7 +160,7 @@ public struct ResultCard: View {
                             Text("breaks")
                             Text(breakLabel)
                         }
-                        .font(GRFont.archivo(13, weight: 700))
+                        .grFont(.archivo(13, weight: 700))
                         .foregroundStyle(GRColor.textSecondary)
                     }
                 }
@@ -221,7 +227,7 @@ public struct HowWeGotThisPanel: View {
                             .rotationEffect(.degrees(isExpanded ? 180 : 0))
                     }
                     .foregroundStyle(GRColor.ink)
-                    .frame(height: 52)
+                    .frame(minHeight: 52)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -274,7 +280,7 @@ public struct InsightCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(eyebrow).gr(.label).foregroundStyle(GRColor.lime)
                 Text(headline)
-                    .font(GRFont.archivo(21, weight: 800))
+                    .grFont(.archivo(21, weight: 800))
                     .foregroundStyle(.white)
                     .fixedSize(horizontal: false, vertical: true)
                 if let action {
@@ -305,7 +311,7 @@ public struct PositiveNote: View {
 
     public var body: some View {
         Text(text)
-            .font(GRFont.archivo(14, weight: 700))
+            .grFont(.archivo(14, weight: 700))
             .foregroundStyle(GRColor.greenTintText)
             .padding(.horizontal, 14)
             .padding(.vertical, 12)

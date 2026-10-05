@@ -20,10 +20,10 @@ public struct VerdictBanner: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verdict.title)
-                .font(GRFont.archivo(34, weight: 800, width: 110))
+                .grFont(.archivo(34, weight: 800, width: 110))
                 .tracking(34 * -0.02)
             Text(detail)
-                .font(GRFont.archivo(15, weight: 600))
+                .grFont(.archivo(15, weight: 600))
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 20)
@@ -49,10 +49,10 @@ public struct VerdictPill: View {
 
     public var body: some View {
         Text(verdict.title)
-            .font(GRFont.archivo(14, weight: 800))
+            .grFont(.archivo(14, weight: 800))
             .foregroundStyle(.white)
             .padding(.horizontal, 12)
-            .frame(height: 30)
+            .frame(minHeight: 30)
             .background(Capsule().fill(verdict.colour))
     }
 
@@ -92,11 +92,11 @@ public struct RevealColumn: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title).gr(.labelSmall).foregroundStyle(isActual ? GRColor.textOnDarkMuted : GRColor.textSecondary)
             Text(headline)
-                .font(GRFont.archivo(22, weight: 800))
+                .grFont(.archivo(22, weight: 800))
                 .foregroundStyle(isActual && headlineMismatch ? GRColor.clayOnDark : textColour)
             ForEach(rows) { row in
                 Text(row.text)
-                    .font(GRFont.archivo(15, weight: 700))
+                    .grFont(.archivo(15, weight: 700))
                     .foregroundStyle(isActual && row.mismatch ? GRColor.clayOnDark : textColour)
             }
         }

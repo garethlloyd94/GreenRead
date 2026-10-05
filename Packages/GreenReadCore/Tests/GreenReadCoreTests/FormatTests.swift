@@ -41,4 +41,21 @@ struct FormatTests {
         #expect(Format.yards(feet: 15) == "5 yd")
         #expect(Format.yards(feet: 20) == "6.7 yd")
     }
+
+    @Test func largeAims() {
+        #expect(Format.aim(inches: 100, unit: .inches, side: .left).text == "100in L")
+        #expect(Format.aim(inches: 100, unit: .cups).amount == "23.5 cups")              // 23.53 → 23.5
+        #expect(Format.aim(inches: 100, unit: .balls).amount == "60 balls")              // 59.52 → 60
+    }
+
+    @Test func zeroAimHasNoSide() {
+        #expect(Format.aim(inches: 0, unit: .cups, side: .left).text == "0 cups")
+        #expect(Format.aim(inches: 0, unit: .balls, side: .right).text == "0 balls")
+    }
+
+    @Test func signedAimInOtherUnits() {
+        #expect(Format.signedAim(inches: -6, unit: .cups) == "−1.5 cups")
+        #expect(Format.signedAim(inches: 4, unit: .cups) == "+1 cup")
+        #expect(Format.signedAim(inches: -2, unit: .balls) == "−1 ball")
+    }
 }

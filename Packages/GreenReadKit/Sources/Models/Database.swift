@@ -6,7 +6,10 @@ import SQLiteData
 extension DependencyValues {
     /// Opens the on-device database and runs migrations. Call once from `prepareDependencies`
     /// at launch, and from the `.dependencies` trait in previews and tests.
-    public mutating func bootstrapDatabase() throws {
+    ///
+    /// - Parameter inMemory: Use a throwaway in-memory database instead of the file on disk.
+    ///   The app falls back to this when the file can't be opened or migrated.
+    public mutating func bootstrapDatabase(inMemory: Bool = false) throws {
         var configuration = Configuration()
         configuration.foreignKeysEnabled = true
         configuration.prepareDatabase { [context] db in
@@ -25,12 +28,21 @@ extension DependencyValues {
             }
             #endif
         }
-        let database = try SQLiteData.defaultDatabase(configuration: configuration)
+        let database: any DatabaseWriter
+        if inMemory {
+            database = try DatabaseQueue(configuration: configuration)
+        } else {
+            database = try SQLiteData.defaultDatabase(configuration: configuration)
+        }
         var migrator = DatabaseMigrator()
         #if DEBUG
+        // Debug builds wipe the database whenever the schema or a migration changes. Release
+        // builds never do: once a migration ships, add a new one instead of editing it.
         migrator.eraseDatabaseOnSchemaChange = true
         #endif
-        migrator.registerMigration("Create 'trainRounds', 'trainPutts', 'savedReads' and 'savedVideos' tables") { db in
+        // Migration names are stored in the database for good, so keep them short and stable.
+        // v1: trainRounds, trainPutts, savedReads and savedVideos.
+        migrator.registerMigration("v1") { db in
             try #sql("""
                 CREATE TABLE "trainRounds" (
                   "id" TEXT PRIMARY KEY NOT NULL ON CONFLICT REPLACE DEFAULT (uuid()),

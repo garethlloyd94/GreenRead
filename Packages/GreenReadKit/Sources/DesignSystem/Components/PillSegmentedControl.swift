@@ -24,7 +24,7 @@ public struct PillSegmentedControl<Value: Hashable>: View {
                     withAnimation(.easeOut(duration: 0.2)) { selection = option }
                 } label: {
                     Text(title(option))
-                        .font(labelFont)
+                        .grFont(labelFont)
                         .foregroundStyle(isSelected ? GRColor.ink : unselectedText)
                         .lineLimit(1)
                         .frame(maxWidth: style == .settings ? nil : .infinity, maxHeight: .infinity)
@@ -45,6 +45,8 @@ public struct PillSegmentedControl<Value: Hashable>: View {
         }
         .padding(4)
         .frame(height: height)
+        // The track has a fixed height, so labels stop growing at the largest non-accessibility size.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .frame(maxWidth: style == .settings ? nil : .infinity)
         .background(Capsule().fill(track))
     }
@@ -57,11 +59,11 @@ public struct PillSegmentedControl<Value: Hashable>: View {
         }
     }
 
-    private var labelFont: Font {
+    private var labelFont: GRFontSpec {
         switch style {
-        case .light: GRFont.archivo(15, weight: 800)
-        case .onCamera: GRFont.archivo(14, weight: 800)
-        case .settings: GRFont.archivo(13, weight: 700)
+        case .light: .archivo(15, weight: 800)
+        case .onCamera: .archivo(14, weight: 800)
+        case .settings: .archivo(13, weight: 700)
         }
     }
 

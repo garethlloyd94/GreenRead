@@ -90,4 +90,57 @@ struct DatabaseTests {
         let count = try database.read { db in try SavedVideo.all.fetchCount(db) }
         #expect(count == 1)
     }
+
+    @Test func savedReadsRoundTrip() throws {
+        try database.write { db in
+            try SavedRead.insert {
+                SavedRead.Draft(
+                    savedAt: now,
+                    source: .quickRead,
+                    distanceFeet: 15,
+                    uphillPercent: 1.2,
+                    sidePercent: 2.1,
+                    stimp: 10,
+                    aimInches: 16
+                )
+                SavedRead.Draft(
+                    savedAt: now,
+                    source: .scan,
+                    distanceFeet: 20,
+                    uphillPercent: -2,
+                    sidePercent: -1,
+                    stimp: 12,
+                    aimInches: 15
+                )
+            }
+            .execute(db)
+        }
+
+        let reads = try database.read { db in try SavedRead.order(by: \.distanceFeet).fetchAll(db) }
+        expectNoDifference(
+            reads,
+            [
+                SavedRead(
+                    id: UUID(0),
+                    savedAt: now,
+                    source: .quickRead,
+                    distanceFeet: 15,
+                    uphillPercent: 1.2,
+                    sidePercent: 2.1,
+                    stimp: 10,
+                    aimInches: 16
+                ),
+                SavedRead(
+                    id: UUID(1),
+                    savedAt: now,
+                    source: .scan,
+                    distanceFeet: 20,
+                    uphillPercent: -2,
+                    sidePercent: -1,
+                    stimp: 12,
+                    aimInches: 15
+                ),
+            ]
+        )
+    }
 }

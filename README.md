@@ -18,6 +18,10 @@
 
 In debug builds Home has a **Component gallery** link showing every design-system component.
 
+## Accessibility
+
+All text scales with Dynamic Type: use `.gr(.style)` for named text styles and `.grFont(.archivo(…))` for one-off sizes, never `.font(GRFont.archivo(…))` directly. Display sizes (28pt and up) are capped at 140% so hero numbers stay on one line.
+
 ## Tests
 
 All tests use Swift Testing.
@@ -32,6 +36,20 @@ All tests use Swift Testing.
   xcodebuild test -scheme GreenReadKit-Package -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -skipMacroValidation
   ```
   Or open `Packages/GreenReadKit/Package.swift` in Xcode and press ⌘U.
+
+CI (`.github/workflows/ci.yml`) runs both on every pull request: `GreenReadCore` on Linux, `GreenReadKit` on an iOS simulator.
+
+## Dependencies
+
+Dependency versions are pinned by the committed `Package.resolved` files (the app's lives in `GreenRead.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/`). After changing or updating a package, commit the updated `Package.resolved` too.
+
+## Database
+
+Records live in SQLite (SQLiteData); migrations are in `Packages/GreenReadKit/Sources/Models/Database.swift`.
+
+- **Debug builds erase the database whenever the schema or a migration changes** (`eraseDatabaseOnSchemaChange`), so expect test rounds and saved reads to disappear after a schema edit.
+- Release builds never erase. Once a migration has shipped, never edit it: add a new one (`v2`, `v3`…).
+- If the database can't be opened at launch, the app logs a fault and runs on an in-memory database for that session.
 
 ## Architecture
 

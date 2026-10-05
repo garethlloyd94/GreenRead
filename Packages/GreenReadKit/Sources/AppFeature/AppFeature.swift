@@ -20,11 +20,15 @@ public struct AppFeature {
         public var home = HomeFeature.State()
         public var path = StackState<AppPath.State>()
 
-        public init() {
-            @Shared(.hasSeenOnboarding) var hasSeenOnboarding
-            if !hasSeenOnboarding {
-                destination = .onboarding(OnboardingFeature.State())
-            }
+        public init(destination: AppDestination.State? = nil) {
+            self.destination = destination
+        }
+
+        /// The state the app starts in: onboarding over Home until the golfer has seen it.
+        /// Read here, at launch, rather than in `init`, so building state has no hidden inputs.
+        public static func launch() -> Self {
+            @SharedReader(.hasSeenOnboarding) var hasSeenOnboarding
+            return Self(destination: hasSeenOnboarding ? nil : .onboarding(OnboardingFeature.State()))
         }
     }
 
@@ -133,7 +137,7 @@ public struct AppView: View {
 
 #Preview {
     let _ = prepareDependencies { try! $0.bootstrapDatabase() }
-    AppView(store: Store(initialState: AppFeature.State()) { AppFeature() })
+    AppView(store: Store(initialState: AppFeature.State.launch()) { AppFeature() })
 }
 
 extension AppPath.State: Equatable {}

@@ -30,7 +30,7 @@ public struct PillButton: View {
             Text(title)
                 .gr(.button)
                 .frame(maxWidth: .infinity)
-                .frame(height: height)
+                .frame(minHeight: height)
         }
         .buttonStyle(PillButtonStyle(kind: kind))
     }
@@ -136,7 +136,7 @@ public struct CircleActionButton: View {
     public var body: some View {
         Button(action: action) {
             Text(title)
-                .font(GRFont.archivo(18, weight: 800))
+                .grFont(.archivo(18, weight: 800))
                 .foregroundStyle(.white)
                 .frame(width: size, height: size)
                 .background(Circle().fill(colour))

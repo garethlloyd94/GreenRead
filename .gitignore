@@ -8,7 +8,7 @@ build/
 # Swift Package Manager
 .build/
 .swiftpm/
-Packages/*/Package.resolved
+# Package.resolved files are committed so every machine and CI build the same dependency versions.
 
 # macOS
 .DS_Store

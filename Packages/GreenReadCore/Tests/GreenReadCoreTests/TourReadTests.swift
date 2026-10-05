@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import GreenReadCore
 
@@ -88,5 +89,28 @@ struct TourReadTests {
         #expect(GreenSpeed(stimp: 11).displayName == "Stimp 11")
         #expect(GreenSpeed.medium.breakFactor == 1)
         #expect(abs(GreenSpeed.fast.breakFactor - 1.2) < 0.0001)
+    }
+
+    @Test func greenSpeedBetweenPresets() {
+        let speed = GreenSpeed(stimp: 11.5)
+        #expect(speed.presetName == nil)
+        #expect(speed.displayName == "Stimp 11.5")
+        #expect(abs(speed.breakFactor - 1.15) < 0.0001)
+        #expect(TourRead.aimInches(feet: 15, slopePercent: 2, hill: .up, speed: speed) == 18) // 16 × 1.15 = 18.4
+    }
+
+    // Slider arithmetic can leave a value a hair off a preset; it still counts as that preset.
+    @Test func greenSpeedRoundsToOneDecimal() {
+        #expect(GreenSpeed(stimp: 10.000001) == .medium)
+        #expect(GreenSpeed(stimp: 10.000001).presetName == "Medium")
+        #expect(GreenSpeed(stimp: 11.04).stimp == 11)
+        #expect(GreenSpeed(stimp: 11.26).stimp == 11.3)
+    }
+
+    @Test func greenSpeedDecodingClamps() throws {
+        let decoded = try JSONDecoder().decode(GreenSpeed.self, from: Data(#"{"stimp":20}"#.utf8))
+        #expect(decoded.stimp == 14)
+        let roundTripped = try JSONDecoder().decode(GreenSpeed.self, from: JSONEncoder().encode(GreenSpeed.fast))
+        #expect(roundTripped == .fast)
     }
 }

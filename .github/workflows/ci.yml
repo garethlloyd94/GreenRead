@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    name: GreenReadCore (Linux)
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: swift test --package-path Packages/GreenReadCore
+
+  kit:
+    name: GreenReadKit (iOS Simulator)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        working-directory: Packages/GreenReadKit
+        run: |
+          xcodebuild test \
+            -scheme GreenReadKit-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -skipMacroValidation \
+            -skipPackagePluginValidation
