@@ -74,6 +74,10 @@ let package = Package(
                 "Models",
                 "TempoFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "SQLiteData", package: "sqlite-data"),
+            ],
+            resources: [
+                .process("Resources"),
             ]
         ),
         .target(
@@ -172,6 +176,13 @@ let package = Package(
             name: "TempoFeatureTests",
             dependencies: [
                 "TempoFeature",
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "DrillsFeatureTests",
+            dependencies: [
+                "DrillsFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
             ]
         ),

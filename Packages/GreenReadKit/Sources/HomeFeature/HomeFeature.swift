@@ -36,7 +36,7 @@ public struct HomeFeature {
 
         @CasePathable
         public enum Delegate {
-            case openPlayer(videoID: String)
+            case openPlayer(Drill, upNext: [Drill])
             case openQuickRead
             case openScan
             case openSettings
@@ -57,8 +57,8 @@ public struct HomeFeature {
             case .binding, .delegate:
                 return .none
 
-            case let .drills(.delegate(.openPlayer(videoID))):
-                return .send(.delegate(.openPlayer(videoID: videoID)))
+            case let .drills(.delegate(.openPlayer(drill, upNext))):
+                return .send(.delegate(.openPlayer(drill, upNext: upNext)))
 
             case .drills:
                 return .none
