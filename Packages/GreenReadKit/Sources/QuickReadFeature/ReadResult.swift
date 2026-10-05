@@ -117,7 +117,7 @@ struct ReadResultView: View {
         .padding(.top, 116)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(GRColor.chalk.ignoresSafeArea())
-        .sensoryFeedback(.success, trigger: store.isSaved) { _, isSaved in isSaved }
+        .sensoryFeedback(.success, trigger: store.isSaved) { _, isSaved in isSaved && settings.hapticsOn }
     }
 
     private func playsMarker(_ hill: Hill) -> String? {

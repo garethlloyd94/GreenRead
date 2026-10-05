@@ -265,7 +265,9 @@ struct RevealView: View {
         .padding(.top, 116)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(GRColor.chalk.ignoresSafeArea())
-        .sensoryFeedback(result.score.verdict == .spotOn ? .success : .warning, trigger: result.score.verdict)
+        .sensoryFeedback(result.score.verdict == .spotOn ? .success : .warning, trigger: result.score.verdict) { _, _ in
+            store.settings.hapticsOn
+        }
     }
 
     private var nextLabel: String {

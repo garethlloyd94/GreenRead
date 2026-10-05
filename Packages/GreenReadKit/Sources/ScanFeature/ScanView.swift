@@ -326,7 +326,7 @@ private struct ScanResultCard: View {
                 .padding(.horizontal, 14)
                 .padding(.bottom, 18)
                 .transition(.move(edge: .bottom))
-                .sensoryFeedback(.success, trigger: store.isSaved) { _, isSaved in isSaved }
+                .sensoryFeedback(.success, trigger: store.isSaved) { _, isSaved in isSaved && settings.hapticsOn }
             }
         }
     }
