@@ -154,12 +154,12 @@ public struct ComponentGallery: View {
                             Rectangle().fill(GRColor.fill).frame(height: 1)
                             Toggle("Haptics", isOn: $haptics).toggleStyle(GRToggleStyle())
                         }
-                        .font(GRFont.archivo(15, weight: 600))
+                        .grFont(.archivo(15, weight: 600))
                         .foregroundStyle(GRColor.ink)
                         .padding(.horizontal, 16)
                     }
                     Text("Practice & casual play only. Slope-reading devices aren't allowed during competitive rounds under the Rules of Golf.")
-                        .font(GRFont.archivo(13, weight: 600))
+                        .grFont(.archivo(13, weight: 600))
                         .foregroundStyle(GRColor.clayTintText)
                         .padding(14)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -172,7 +172,7 @@ public struct ComponentGallery: View {
                         BottomCard {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("STEP 1 · DISTANCE").gr(.labelSmall).foregroundStyle(GRColor.textSecondary)
-                                Text("15 ft").font(GRFont.archivo(34, weight: 800, width: 110))
+                                Text("15 ft").grFont(.archivo(34, weight: 800, width: 110))
                                 PillButton("Next · lay phone flat", kind: .neutral) {}
                             }
                         }

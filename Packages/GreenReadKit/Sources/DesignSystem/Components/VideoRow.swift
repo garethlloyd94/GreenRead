@@ -54,7 +54,7 @@ public struct VideoRow: View {
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         .overlay(alignment: .bottomTrailing) {
                             Text(duration)
-                                .font(GRFont.archivo(11, weight: 700))
+                                .grFont(.archivo(11, weight: 700))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 1)
@@ -63,11 +63,11 @@ public struct VideoRow: View {
                         }
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(GRFont.archivo(15, weight: 700))
+                            .grFont(.archivo(15, weight: 700))
                             .foregroundStyle(GRColor.ink)
                             .multilineTextAlignment(.leading)
                         Text(subtitle)
-                            .font(GRFont.archivo(12, weight: 500))
+                            .grFont(.archivo(12, weight: 500))
                             .foregroundStyle(GRColor.textSecondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,7 +148,7 @@ public struct GRToggleStyle: ToggleStyle {
                 )
                 Toggle("Haptics", isOn: $haptics)
                     .toggleStyle(GRToggleStyle())
-                    .font(GRFont.archivo(15, weight: 600))
+                    .grFont(.archivo(15, weight: 600))
             }
             .padding()
             .background(GRColor.chalk)

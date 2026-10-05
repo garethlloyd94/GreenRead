@@ -11,7 +11,7 @@ public struct DivergingBar: View {
     public var body: some View {
         HStack(spacing: 8) {
             Text(label)
-                .font(GRFont.archivo(13, weight: 600))
+                .grFont(.archivo(13, weight: 600))
                 .foregroundStyle(GRColor.ink)
                 .frame(width: 70, alignment: .leading)
             GeometryReader { proxy in

@@ -35,11 +35,11 @@ public struct Chip: View {
                 .frame(minHeight: 38)
         case .block:
             Text(title)
-                .font(GRFont.archivo(17, weight: 800))
+                .grFont(.archivo(17, weight: 800))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
-                .frame(height: GRMetrics.chipHeight)
+                .frame(minHeight: GRMetrics.chipHeight)
         }
     }
 

@@ -80,11 +80,62 @@ public enum GRFont {
     }
 }
 
+/// A font at its design size, applied with `.grFont(_:)` so it grows with Dynamic Type.
+///
+///     Text("15 ft").grFont(.archivo(34, weight: 800, width: 110))
+public struct GRFontSpec: Sendable {
+    public enum Family: Sendable { case archivo, mono }
+
+    public let family: Family
+    /// Point size at the default Dynamic Type size (Large).
+    public let size: CGFloat
+    public let weight: CGFloat
+    public let width: CGFloat
+
+    public init(family: Family, size: CGFloat, weight: CGFloat, width: CGFloat = 100) {
+        self.family = family
+        self.size = size
+        self.weight = weight
+        self.width = width
+    }
+
+    public static func archivo(_ size: CGFloat, weight: CGFloat = 400, width: CGFloat = 100) -> Self {
+        Self(family: .archivo, size: size, weight: weight, width: width)
+    }
+
+    public static func mono(_ size: CGFloat, weight: CGFloat = 600) -> Self {
+        Self(family: .mono, size: size, weight: weight)
+    }
+
+    /// The font at the design size, ignoring Dynamic Type.
+    public var font: Font { font(size: size) }
+
+    /// The font at a given point size.
+    public func font(size: CGFloat) -> Font {
+        switch family {
+        case .archivo: GRFont.archivo(size, weight: weight, width: width)
+        case .mono: GRFont.mono(size, weight: weight)
+        }
+    }
+}
+
+extension GRFont {
+    /// `size` scaled for a Dynamic Type size. Display sizes (28pt and up) follow Large Title and
+    /// stop at 140%, so hero numbers stay on one line; everything else may double.
+    public static func scaledSize(_ size: CGFloat, for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
+        let isDisplay = size >= 28
+        let textStyle: UIFont.TextStyle = isDisplay ? .largeTitle : size >= 20 ? .title2 : .body
+        let traits = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
+        let scaled = UIFontMetrics(forTextStyle: textStyle).scaledValue(for: size, compatibleWith: traits)
+        return min(scaled, size * (isDisplay ? 1.4 : 2))
+    }
+}
+
 /// Named text styles used across the app, matching the handoff's type scale.
 /// Tracking is given in em and converted to points for the font size.
 /// Mono label strings are written in uppercase at the call site ("ACTUAL", "AIM").
 public struct GRTextStyle: Sendable {
-    public enum Family: Sendable { case archivo, mono }
+    public typealias Family = GRFontSpec.Family
 
     public let family: Family
     public let size: CGFloat
@@ -92,12 +143,12 @@ public struct GRTextStyle: Sendable {
     public let width: CGFloat
     public let trackingEm: CGFloat
 
-    public var font: Font {
-        switch family {
-        case .archivo: GRFont.archivo(size, weight: weight, width: width)
-        case .mono: GRFont.mono(size, weight: weight)
-        }
+    public var spec: GRFontSpec {
+        GRFontSpec(family: family, size: size, weight: weight, width: width)
     }
+
+    /// The font at the design size, ignoring Dynamic Type. Views use `.gr(_:)` instead.
+    public var font: Font { spec.font }
 
     public var tracking: CGFloat { size * trackingEm }
 
@@ -136,15 +187,35 @@ public struct GRTextStyle: Sendable {
 }
 
 extension View {
-    /// Applies a GreenRead text style: font and tracking.
+    /// Applies a GreenRead text style, font and tracking, scaled for Dynamic Type:
+    /// `Text("AIM").gr(.label)` renders in JetBrains Mono with label tracking.
+    public func gr(_ style: GRTextStyle) -> some View {
+        modifier(GRScaledFont(spec: style.spec, trackingEm: style.trackingEm))
+    }
+
+    /// Same as `gr(_:)`, for containers whose text should share one style.
     public func grTextStyle(_ style: GRTextStyle) -> some View {
-        font(style.font).tracking(style.tracking)
+        gr(style)
+    }
+
+    /// Applies a one-off font, scaled for Dynamic Type.
+    public func grFont(_ spec: GRFontSpec) -> some View {
+        modifier(GRScaledFont(spec: spec, trackingEm: nil))
     }
 }
 
-extension Text {
-    /// `Text("AIM").gr(.label)` renders in JetBrains Mono with label tracking.
-    public func gr(_ style: GRTextStyle) -> Text {
-        font(style.font).tracking(style.tracking)
+private struct GRScaledFont: ViewModifier {
+    let spec: GRFontSpec
+    let trackingEm: CGFloat?
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        let size = GRFont.scaledSize(spec.size, for: dynamicTypeSize)
+        if let trackingEm {
+            content.font(spec.font(size: size)).tracking(size * trackingEm)
+        } else {
+            content.font(spec.font(size: size))
+        }
     }
 }
