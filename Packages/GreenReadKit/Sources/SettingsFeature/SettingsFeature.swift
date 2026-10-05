@@ -121,7 +121,7 @@ public struct SettingsView: View {
             .padding(.horizontal, GRMetrics.screenPadding)
             .padding(.bottom, 34)
         }
-        .background(GRColor.chalk)
+        .presentationBackground(GRColor.chalk)
         .presentationDetents([.height(600), .large])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(32)

@@ -19,9 +19,22 @@
 		A1B2C3D4E5F6000000000018 /* GreenReadKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadKit; path = Packages/GreenReadKit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1B2C3D4E5F600000000001B /* Exceptions for "GreenRead" folder in "GreenRead" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1B2C3D4E5F6000000000006 /* GreenRead */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1B2C3D4E5F6000000000002 /* GreenRead */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1B2C3D4E5F600000000001B /* Exceptions for "GreenRead" folder in "GreenRead" target */,
+			);
 			path = GreenRead;
 			sourceTree = "<group>";
 		};
@@ -272,6 +285,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GreenRead/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GreenRead;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "GreenRead uses the camera to map the green and show your putting line.";
@@ -307,6 +321,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GreenRead/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GreenRead;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "GreenRead uses the camera to map the green and show your putting line.";

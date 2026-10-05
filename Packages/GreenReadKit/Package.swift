@@ -169,6 +169,13 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "TempoFeatureTests",
+            dependencies: [
+                "TempoFeature",
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
             name: "SettingsFeatureTests",
             dependencies: [
                 "SettingsFeature",
