@@ -2,15 +2,18 @@ import ComposableArchitecture
 import DesignSystem
 import DrillsFeature
 import Models
+import SQLiteData
 import SwiftUI
 
-/// Home (navigation option Nd): wordmark, Play | Drills switch and ⚙. Tiles are styled in M2.
+/// Home (navigation option Nd): wordmark, Play | Drills switch and ⚙, then the Play tiles.
 @Reducer
 public struct HomeFeature {
     @ObservableState
     public struct State: Equatable {
         public var drills = DrillsFeed.State()
         public var segment: Segment = .play
+        @ObservationStateIgnored
+        @Fetch(StatsSummary.Request()) public var stats = StatsSummary()
         @SharedReader(.tempoBPM) public var tempoBPM
 
         public init() {}
@@ -88,37 +91,49 @@ public struct HomeView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 0) {
                 Wordmark()
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
                 HStack(spacing: GRMetrics.gap) {
                     PillSegmentedControl(
                         options: HomeFeature.Segment.allCases,
                         selection: $store.segment
                     ) { $0.rawValue }
-                    CircleIconButton(systemName: "gearshape", accessibilityLabel: "Settings", size: 46) {
+                    CircleIconButton(systemName: "gearshape.fill", accessibilityLabel: "Settings", size: 46) {
                         store.send(.settingsButtonTapped)
                     }
                 }
+                .padding(.horizontal, GRMetrics.screenPadding)
+                .padding(.top, 18)
                 switch store.segment {
                 case .play:
                     playTiles
+                        .padding(GRMetrics.screenPadding)
                 case .drills:
                     DrillsFeedView(store: store.scope(state: \.drills, action: \.drills))
+                        .padding(GRMetrics.screenPadding)
                 }
             }
-            .padding(.horizontal, GRMetrics.screenPadding)
-            .padding(.top, 12)
         }
         .background(GRColor.chalk.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
     }
 
     private var playTiles: some View {
-        VStack(spacing: GRMetrics.gap) {
-            PillButton("Scan", kind: .go) { store.send(.scanTileTapped) }
-            PillButton("Quick Read", kind: .neutral) { store.send(.quickReadTileTapped) }
-            PillButton("Tempo · \(store.tempoBPM) BPM", kind: .secondary) { store.send(.tempoTileTapped) }
-            PillButton("Stats", kind: .secondary) { store.send(.statsTileTapped) }
+        VStack(spacing: 12) {
+            HomeTile(title: "Scan", subtitle: "AR putt line on the green", height: 132, isHero: true) {
+                store.send(.scanTileTapped)
+            }
+            HomeTile(title: "Quick Read", subtitle: "Phone flat · Read or Train", height: 132) {
+                store.send(.quickReadTileTapped)
+            }
+            HomeTile(title: "Tempo", subtitle: "Metronome · \(store.tempoBPM) BPM", height: 112, titleSize: 24) {
+                store.send(.tempoTileTapped)
+            }
+            StatsTile(hint: store.stats.hint) {
+                store.send(.statsTileTapped)
+            }
             #if DEBUG
             NavigationLink("Component gallery") { ComponentGallery() }
                 .grTextStyle(.headline)
@@ -128,7 +143,84 @@ public struct HomeView: View {
     }
 }
 
+/// Large Play tile: title, subtitle and a › chevron. Scan is the green hero.
+private struct HomeTile: View {
+    let title: String
+    let subtitle: String
+    let height: CGFloat
+    var isHero = false
+    var titleSize: CGFloat = 26
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(GRFont.archivo(titleSize, weight: 800))
+                    Text(subtitle)
+                        .font(GRFont.archivo(14, weight: 500))
+                        .foregroundStyle(isHero ? Color.white : GRColor.textSecondary)
+                }
+                Spacer()
+                Text("›").font(GRFont.archivo(26, weight: 800))
+            }
+            .foregroundStyle(isHero ? Color.white : GRColor.ink)
+            .padding(.horizontal, 22)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .background(
+                RoundedRectangle(cornerRadius: GRMetrics.largeCardRadius, style: .continuous)
+                    .fill(isHero ? GRColor.green : GRColor.card)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: GRMetrics.largeCardRadius, style: .continuous))
+        }
+        .buttonStyle(TilePressStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+    }
+}
+
+/// Compact Stats tile: "2/3 rounds ›" until Stats unlock, then the accuracy figure.
+private struct StatsTile: View {
+    let hint: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Text("Stats").font(GRFont.archivo(19, weight: 800))
+                Spacer()
+                Text("\(hint) ›")
+                    .font(GRFont.archivo(14, weight: 700))
+                    .foregroundStyle(GRColor.green)
+            }
+            .foregroundStyle(GRColor.ink)
+            .padding(.horizontal, 22)
+            .frame(maxWidth: .infinity)
+            .frame(height: 76)
+            .background(
+                RoundedRectangle(cornerRadius: GRMetrics.largeCardRadius, style: .continuous)
+                    .fill(GRColor.card)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: GRMetrics.largeCardRadius, style: .continuous))
+        }
+        .buttonStyle(TilePressStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+    }
+}
+
+private struct TilePressStyle: ButtonStyle {
+    func makeBody(configuration: ButtonStyleConfiguration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
 #Preview {
+    let _ = prepareDependencies { try! $0.bootstrapDatabase() }
     NavigationStack {
         HomeView(store: Store(initialState: HomeFeature.State()) { HomeFeature() })
     }

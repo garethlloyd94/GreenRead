@@ -138,3 +138,19 @@ public struct AppView: View {
 
 extension AppPath.State: Equatable {}
 extension AppDestination.State: Equatable {}
+
+#if DEBUG
+extension AppFeature.State {
+    /// Opens a screen by name at launch; see `GreenReadApp.initialState()`.
+    public mutating func openForDebugging(_ screen: String) {
+        switch screen {
+        case "quickRead": destination = .tool(.quickRead)
+        case "scan": destination = .tool(.scan)
+        case "settings": destination = .settings(SettingsFeature.State())
+        case "stats": path.append(.stats(StatsFeature.State()))
+        case "tempo": destination = .tempo(TempoFeature.State())
+        default: break
+        }
+    }
+}
+#endif

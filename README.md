@@ -18,6 +18,10 @@
 
 In debug builds Home has a **Component gallery** link showing every design-system component.
 
+Debug launch arguments (Scheme → Run → Arguments, or `xcrun simctl launch booted com.garethlloyd.greenread …`):
+- `-hasSeenOnboarding '<true/>'` skips onboarding.
+- `-screen settings|tempo|quickRead|scan|stats` opens that screen at launch.
+
 ## Tests
 
 All tests use Swift Testing.
