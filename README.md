@@ -18,6 +18,12 @@
 
 In debug builds Home has a **Component gallery** link showing every design-system component.
 
+Debug launch arguments (Scheme → Run → Arguments, or `xcrun simctl launch booted com.garethlloyd.greenread …`):
+- `-hasSeenOnboarding '<true/>'` skips onboarding.
+- `-screen settings|tempo|quickRead|quickRead.layFlat|quickRead.result|quickRead.train|train.guess|train.reveal|train.summary|drills|player|scan|scan.noLiDAR|scan.camera|scan.mark|scan.scanning|scan.sun|scan.poor|scan.speed|scan.result|stats` opens that screen at launch.
+- `-seedStats '<true/>'` adds four sample Train rounds so Stats is unlocked.
+- In the Simulator, motion and step counting are scripted (a phone laid on a 1.2% uphill, 2.1% R→L green), so Quick Read runs end to end.
+
 ## Accessibility
 
 All text scales with Dynamic Type: use `.gr(.style)` for named text styles and `.grFont(.archivo(…))` for one-off sizes, never `.font(GRFont.archivo(…))` directly. Display sizes (28pt and up) are capped at 140% so hero numbers stay on one line.
