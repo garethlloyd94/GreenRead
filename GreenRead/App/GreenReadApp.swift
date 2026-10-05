@@ -14,6 +14,11 @@ struct GreenReadApp: App {
     init() {
         prepareDependencies {
             try! $0.bootstrapDatabase()
+            #if DEBUG
+            if UserDefaults.standard.bool(forKey: "seedStats") {
+                try? $0.defaultDatabase.write { try $0.seedSampleRounds() }
+            }
+            #endif
             #if DEBUG && targetEnvironment(simulator)
             // The Simulator has no motion sensors: script a phone being laid on a green.
             $0[MotionClient.self] = .previewValue

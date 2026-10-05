@@ -93,3 +93,36 @@ extension DependencyValues {
 }
 
 private let logger = Logger(subsystem: "com.garethlloyd.greenread", category: "Database")
+
+#if DEBUG
+extension Database {
+    /// Four Train rounds with a clear under-read on left-to-right putts, for checking Stats.
+    public func seedSampleRounds() throws {
+        let scores = [52, 61, 58, 71]
+        let base = Date(timeIntervalSince1970: 1_790_000_000)
+        try seed {
+            for (index, score) in scores.enumerated() {
+                let roundID = UUID(-(index + 1))
+                TrainRound(id: roundID, playedAt: base.addingTimeInterval(Double(index) * 86_400), score: score)
+                for position in 1...5 {
+                    let leftToRight = position.isMultiple(of: 2)
+                    TrainPutt(
+                        id: UUID(-(index * 5 + position)),
+                        trainRoundID: roundID,
+                        position: position,
+                        distanceFeet: Double(6 + position * 4),
+                        actualUphillPercent: position == 3 ? -1.4 : 1.1,
+                        actualSidePercent: leftToRight ? -3 : 2,
+                        guessedSlopePercent: leftToRight ? 2 : 2,
+                        guessedBreak: leftToRight ? .leftToRight : .rightToLeft,
+                        guessedHill: .up,
+                        guessedAimInches: 10,
+                        verdict: leftToRight ? .underRead : .spotOn,
+                        points: leftToRight ? 12 : 20
+                    )
+                }
+            }
+        }
+    }
+}
+#endif

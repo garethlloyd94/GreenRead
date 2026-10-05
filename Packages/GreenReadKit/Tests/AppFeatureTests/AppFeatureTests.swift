@@ -122,18 +122,37 @@ struct AppFeatureTests {
     }
 
     @Test func trainSummaryShowsStats() async {
+        var train = TrainFlow.State()
+        train.step = .summary(Summary.State(results: []))
         var state = Self.returningUser()
-        state.destination = .tool(ToolFeature.State(tool: .quickRead(QuickReadFeature.State(mode: .train(TrainFlow.State())))))
+        state.destination = .tool(ToolFeature.State(tool: .quickRead(QuickReadFeature.State(mode: .train(train)))))
         let store = TestStore(initialState: state) {
             AppFeature()
         }
 
-        await store.send(\.destination.tool.tool.quickRead.mode.train.seeStatsButtonTapped)
+        await store.send(\.destination.tool.tool.quickRead.mode.train.step.summary.statsButtonTapped)
+        await store.receive(\.destination.tool.tool.quickRead.mode.train.step.summary.delegate.showStats)
         await store.receive(\.destination.tool.tool.quickRead.mode.train.delegate.showStats)
         await store.receive(\.destination.tool.tool.quickRead.delegate.showStats)
         await store.receive(\.destination.tool.delegate.showStats) {
             $0.destination = nil
             $0.path[id: 0] = .stats(StatsFeature.State())
+        }
+    }
+
+    @Test func lockedStatsStartsATrainRound() async {
+        var state = Self.returningUser()
+        state.path.append(.stats(StatsFeature.State()))
+        let store = TestStore(initialState: state) {
+            AppFeature()
+        }
+
+        await store.send(\.path[id: 0].stats.playTrainRoundButtonTapped)
+        await store.receive(\.path[id: 0].stats.delegate.playTrainRound) {
+            $0.path = StackState()
+            $0.destination = .tool(
+                ToolFeature.State(tool: .quickRead(QuickReadFeature.State(mode: .train(TrainFlow.State()))))
+            )
         }
     }
 
