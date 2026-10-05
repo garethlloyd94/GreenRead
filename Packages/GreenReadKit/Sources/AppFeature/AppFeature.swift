@@ -6,6 +6,7 @@ import Models
 import GreenReadCore
 import OnboardingFeature
 import QuickReadFeature
+import ScanFeature
 import SettingsFeature
 import StatsFeature
 import SwiftUI
@@ -168,6 +169,32 @@ extension AppFeature.State {
             quickRead.hasCheckedPermission = true
             destination = .tool(ToolFeature.State(tool: .quickRead(quickRead)))
         case "scan": destination = .tool(.scan)
+        case let name where name.hasPrefix("scan."):
+            var scan = ScanFlow.State()
+            let slope = SlopeReading(uphillPercent: 1.2, sidePercent: -1.6)
+            scan.points = [SIMD3(0, 0, 0), SIMD3(0, 0.04, -3.05)]
+            switch name {
+            case "scan.noLiDAR": scan.step = .noLiDAR; scan.points = []
+            case "scan.camera": scan.step = .cameraPrimer(isDenied: false); scan.points = []
+            case "scan.mark": scan.step = .mark; scan.points = [SIMD3(0, 0, 0)]
+            case "scan.scanning", "scan.sun":
+                scan.step = .scanning
+                scan.progress = ScanProgress(coverage: 0.6, prompt: .coverLeft, slope: slope)
+                scan.isBrightSun = name == "scan.sun"
+            case "scan.poor":
+                scan.step = .poorScan
+                scan.progress = ScanProgress(coverage: 0.41, prompt: .coverLeft, slope: slope)
+            case "scan.speed":
+                scan.step = .scanning
+                scan.progress = ScanProgress(coverage: 0.96, prompt: .walkToHole, slope: slope)
+                scan.slope = slope
+                scan.greenSpeed = GreenSpeedPicker.State(speed: .medium)
+            default:
+                scan.step = .result
+                scan.slope = slope
+                scan.speed = .medium
+            }
+            destination = .tool(ToolFeature.State(tool: .scan(scan)))
         case "settings": destination = .settings(SettingsFeature.State())
         case "stats": path.append(.stats(StatsFeature.State()))
         case "drills": home.segment = .drills
