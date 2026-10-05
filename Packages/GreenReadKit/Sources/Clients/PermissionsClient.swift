@@ -34,15 +34,18 @@ extension PermissionsClient: DependencyKey {
                 await AVCaptureDevice.requestAccess(for: .video)
             },
             motionStatus: {
-                switch CMMotionActivityManager.authorizationStatus() {
+                // Nothing to ask for where Motion & Fitness doesn't exist (the Simulator).
+                guard CMMotionActivityManager.isActivityAvailable() else { return .authorized }
+                return switch CMMotionActivityManager.authorizationStatus() {
                 case .notDetermined: .notDetermined
                 case .authorized: .authorized
                 default: .denied
                 }
             },
             requestMotion: {
+                guard CMMotionActivityManager.isActivityAvailable() else { return true }
                 // Motion & Fitness has no request API: the first activity query shows the prompt.
-                await withCheckedContinuation { continuation in
+                return await withCheckedContinuation { continuation in
                     let manager = CMMotionActivityManager()
                     let now = Date()
                     manager.queryActivityStarting(from: now, to: now, to: .main) { _, _ in

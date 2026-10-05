@@ -20,7 +20,8 @@ In debug builds Home has a **Component gallery** link showing every design-syste
 
 Debug launch arguments (Scheme → Run → Arguments, or `xcrun simctl launch booted com.garethlloyd.greenread …`):
 - `-hasSeenOnboarding '<true/>'` skips onboarding.
-- `-screen settings|tempo|quickRead|scan|stats` opens that screen at launch.
+- `-screen settings|tempo|quickRead|quickRead.layFlat|quickRead.result|scan|stats` opens that screen at launch.
+- In the Simulator, motion and step counting are scripted (a phone laid on a 1.2% uphill, 2.1% R→L green), so Quick Read runs end to end.
 
 ## Tests
 
