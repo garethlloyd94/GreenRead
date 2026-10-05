@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1B2C3D4E5F6000000000010 /* GreenReadCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000011 /* GreenReadCore */; };
+		A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000011 /* AppFeature */; };
+		A1B2C3D4E5F6000000000014 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000015 /* Models */; };
+		A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000017 /* DesignSystem */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A1B2C3D4E5F6000000000001 /* GreenRead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GreenRead.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1B2C3D4E5F6000000000013 /* GreenReadCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadCore; path = Packages/GreenReadCore; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000018 /* GreenReadKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadKit; path = Packages/GreenReadKit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -28,7 +31,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1B2C3D4E5F6000000000010 /* GreenReadCore in Frameworks */,
+				A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */,
+				A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */,
+				A1B2C3D4E5F6000000000014 /* Models in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +45,7 @@
 			children = (
 				A1B2C3D4E5F6000000000002 /* GreenRead */,
 				A1B2C3D4E5F6000000000013 /* GreenReadCore */,
+				A1B2C3D4E5F6000000000018 /* GreenReadKit */,
 				A1B2C3D4E5F6000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -72,7 +78,9 @@
 			);
 			name = GreenRead;
 			packageProductDependencies = (
-				A1B2C3D4E5F6000000000011 /* GreenReadCore */,
+				A1B2C3D4E5F6000000000011 /* AppFeature */,
+				A1B2C3D4E5F6000000000017 /* DesignSystem */,
+				A1B2C3D4E5F6000000000015 /* Models */,
 			);
 			productName = GreenRead;
 			productReference = A1B2C3D4E5F6000000000001 /* GreenRead.app */;
@@ -103,7 +111,7 @@
 			mainGroup = A1B2C3D4E5F6000000000004;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A1B2C3D4E5F6000000000012 /* XCLocalSwiftPackageReference "Packages/GreenReadCore" */,
+				A1B2C3D4E5F6000000000012 /* XCLocalSwiftPackageReference "Packages/GreenReadKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A1B2C3D4E5F6000000000005 /* Products */;
@@ -281,7 +289,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -316,7 +324,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -345,16 +353,24 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A1B2C3D4E5F6000000000012 /* XCLocalSwiftPackageReference "Packages/GreenReadCore" */ = {
+		A1B2C3D4E5F6000000000012 /* XCLocalSwiftPackageReference "Packages/GreenReadKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/GreenReadCore;
+			relativePath = Packages/GreenReadKit;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D4E5F6000000000011 /* GreenReadCore */ = {
+		A1B2C3D4E5F6000000000011 /* AppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = GreenReadCore;
+			productName = AppFeature;
+		};
+		A1B2C3D4E5F6000000000015 /* Models */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Models;
+		};
+		A1B2C3D4E5F6000000000017 /* DesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DesignSystem;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
