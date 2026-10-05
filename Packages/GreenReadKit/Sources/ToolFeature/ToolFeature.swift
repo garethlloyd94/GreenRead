@@ -19,6 +19,19 @@ public struct ToolFeature {
         public static var quickRead: Self { Self(tool: .quickRead(QuickReadFeature.State())) }
         public static var scan: Self { Self(tool: .scan(ScanFlow.State())) }
 
+        /// Light status-bar text over the camera and the lay-flat colours; dark over chalk.
+        public var usesLightStatusBar: Bool {
+            switch tool {
+            case let .quickRead(quickRead):
+                return quickRead.isOverDarkBackground
+            case let .scan(scan):
+                switch scan.step {
+                case .checking, .mark, .scanning, .poorScan, .result: return true
+                case .noLiDAR, .cameraPrimer: return false
+                }
+            }
+        }
+
         public var toolKind: ToolKind {
             switch tool {
             case .quickRead: .quickRead
@@ -71,6 +84,9 @@ public struct ToolFeature {
                 state = kind == .scan ? .scan : .quickRead
                 return .none
 
+            case .tool(.quickRead(.delegate(.close))):
+                return .run { [dismiss] _ in await dismiss() }
+
             case .tool(.quickRead(.delegate(.showStats))):
                 return .send(.delegate(.showStats))
 
@@ -93,38 +109,47 @@ public struct ToolView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 20) {
-            HStack {
-                CircleIconButton(systemName: "xmark", accessibilityLabel: "Close") {
-                    store.send(.closeButtonTapped)
-                }
-                Spacer()
-                Menu {
-                    ForEach(ToolFeature.ToolKind.allCases, id: \.self) { kind in
-                        Button(kind.rawValue) { store.send(.switcherTapped(kind)) }
-                    }
-                } label: {
-                    Text(store.toolKind.rawValue)
-                        .gr(.button)
-                        .foregroundStyle(GRColor.ink)
-                        .padding(.horizontal, 18)
-                        .frame(minHeight: GRMetrics.minTapTarget)
-                        .background(Capsule().fill(.white))
-                }
-                .accessibilityLabel("Switch tool")
-                Spacer()
-                Color.clear.frame(width: GRMetrics.circleButton, height: GRMetrics.circleButton)
-            }
+        ZStack(alignment: .top) {
             switch store.scope(state: \.tool, action: \.tool).case {
             case let .quickRead(quickReadStore):
                 QuickReadView(store: quickReadStore)
             case let .scan(scanStore):
                 ScanView(store: scanStore)
             }
+            chrome
+                .padding(.horizontal, GRMetrics.screenPadding)
+                .padding(.top, 4)
         }
-        .padding(GRMetrics.screenPadding)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(GRColor.turfDark.ignoresSafeArea())
+        .background(GRColor.ink.ignoresSafeArea())
+        .preferredColorScheme(store.usesLightStatusBar ? .dark : .light)
+    }
+
+    /// ✕ on the left, the tool-name pill (Scan ↔ Quick Read) in the centre.
+    private var chrome: some View {
+        HStack {
+            CircleIconButton(systemName: "xmark", accessibilityLabel: "Close", floating: true) {
+                store.send(.closeButtonTapped)
+            }
+            Spacer()
+            Menu {
+                ForEach(ToolFeature.ToolKind.allCases, id: \.self) { kind in
+                    Button(kind.rawValue) { store.send(.switcherTapped(kind)) }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Text(store.toolKind.rawValue).grFont(.archivo(16, weight: 800))
+                    Image(systemName: "chevron.down").font(.system(size: 11, weight: .bold))
+                }
+                .foregroundStyle(GRColor.ink)
+                .padding(.horizontal, 18)
+                .frame(height: GRMetrics.minTapTarget)
+                .background(Capsule().fill(.white))
+                .floatingShadow()
+            }
+            .accessibilityLabel("Tool: \(store.toolKind.rawValue). Switch tool")
+            Spacer()
+            Color.clear.frame(width: GRMetrics.circleButton, height: GRMetrics.circleButton)
+        }
     }
 }
 

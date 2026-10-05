@@ -54,6 +54,8 @@ public struct DivergingBar: View {
 
 /// "◀ UNDER  ·  OVER ▶" header above a stack of diverging bars.
 public struct DivergingBarLegend: View {
+    public init() {}
+
     public var body: some View {
         HStack {
             Text("◀ UNDER")

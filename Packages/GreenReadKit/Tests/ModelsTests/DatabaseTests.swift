@@ -144,3 +144,50 @@ struct DatabaseTests {
         )
     }
 }
+
+@Suite(
+    .dependencies {
+        $0.uuid = .incrementing
+        try $0.bootstrapDatabase()
+    }
+)
+struct StatsSummaryTests {
+    @Dependency(\.defaultDatabase) var database
+
+    @Test func showsRoundsUntilUnlockedThenRecentAccuracy() throws {
+        let empty = try database.read { db in try StatsSummary.Request().fetch(db) }
+        expectNoDifference(empty, StatsSummary(roundCount: 0, recentAccuracy: nil))
+        #expect(empty.hint == "0/3 rounds")
+
+        try database.write { db in
+            try db.seed {
+                TrainRound(id: UUID(-1), playedAt: Date(timeIntervalSince1970: 1), score: 60)
+                TrainRound(id: UUID(-2), playedAt: Date(timeIntervalSince1970: 2), score: 71)
+            }
+        }
+        let two = try database.read { db in try StatsSummary.Request().fetch(db) }
+        #expect(two.hint == "2/3 rounds")
+
+        try database.write { db in
+            try db.seed {
+                TrainRound(id: UUID(-3), playedAt: Date(timeIntervalSince1970: 3), score: 82)
+            }
+        }
+        let three = try database.read { db in try StatsSummary.Request().fetch(db) }
+        expectNoDifference(three, StatsSummary(roundCount: 3, recentAccuracy: 71))
+        #expect(three.hint == "71%")
+    }
+
+    @Test func accuracyUsesTheSevenMostRecentRounds() throws {
+        try database.write { db in
+            try db.seed {
+                TrainRound(id: UUID(-1), playedAt: Date(timeIntervalSince1970: 0), score: 0)
+                for index in 1...7 {
+                    TrainRound(id: UUID(-1 - index), playedAt: Date(timeIntervalSince1970: Double(index)), score: 80)
+                }
+            }
+        }
+        let summary = try database.read { db in try StatsSummary.Request().fetch(db) }
+        expectNoDifference(summary, StatsSummary(roundCount: 8, recentAccuracy: 80))
+    }
+}

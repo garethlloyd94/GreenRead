@@ -10,6 +10,7 @@
 		A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000011 /* AppFeature */; };
 		A1B2C3D4E5F6000000000014 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000015 /* Models */; };
 		A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000017 /* DesignSystem */; };
+		A1B2C3D4E5F6000000000019 /* Clients in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F600000000001A /* Clients */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,9 +19,22 @@
 		A1B2C3D4E5F6000000000018 /* GreenReadKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadKit; path = Packages/GreenReadKit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1B2C3D4E5F600000000001B /* Exceptions for "GreenRead" folder in "GreenRead" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1B2C3D4E5F6000000000006 /* GreenRead */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1B2C3D4E5F6000000000002 /* GreenRead */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1B2C3D4E5F600000000001B /* Exceptions for "GreenRead" folder in "GreenRead" target */,
+			);
 			path = GreenRead;
 			sourceTree = "<group>";
 		};
@@ -32,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */,
+				A1B2C3D4E5F6000000000019 /* Clients in Frameworks */,
 				A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */,
 				A1B2C3D4E5F6000000000014 /* Models in Frameworks */,
 			);
@@ -79,6 +94,7 @@
 			name = GreenRead;
 			packageProductDependencies = (
 				A1B2C3D4E5F6000000000011 /* AppFeature */,
+				A1B2C3D4E5F600000000001A /* Clients */,
 				A1B2C3D4E5F6000000000017 /* DesignSystem */,
 				A1B2C3D4E5F6000000000015 /* Models */,
 			);
@@ -269,13 +285,13 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GreenRead/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GreenRead;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "GreenRead uses the camera to map the green and show your putting line.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "GreenRead measures the slope of the green when your phone lies flat.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -304,13 +320,13 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GreenRead/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GreenRead;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "GreenRead uses the camera to map the green and show your putting line.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "GreenRead measures the slope of the green when your phone lies flat.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -367,6 +383,10 @@
 		A1B2C3D4E5F6000000000015 /* Models */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Models;
+		};
+		A1B2C3D4E5F600000000001A /* Clients */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Clients;
 		};
 		A1B2C3D4E5F6000000000017 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

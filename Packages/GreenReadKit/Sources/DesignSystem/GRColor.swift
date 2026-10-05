@@ -31,4 +31,6 @@ public enum GRColor {
     public static let turfLight = Color(.turfLight)
     public static let thumbDark = Color(.thumbDark)
     public static let thumbLight = Color(.thumbLight)
+    public static let videoDark = Color(.videoDark)
+    public static let videoLight = Color(.videoLight)
 }
