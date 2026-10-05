@@ -21,7 +21,7 @@ import Testing
 @MainActor
 struct AppFeatureTests {
     @Test func firstLaunchShowsOnboarding() async {
-        let store = TestStore(initialState: AppFeature.State()) {
+        let store = TestStore(initialState: AppFeature.State.launch()) {
             AppFeature()
         }
         #expect(store.state.destination == .onboarding(OnboardingFeature.State()))
@@ -33,7 +33,7 @@ struct AppFeatureTests {
         await store.receive(\.destination.dismiss) {
             $0.destination = nil
         }
-        #expect(AppFeature.State().destination == nil)
+        #expect(AppFeature.State.launch().destination == nil)
     }
 
     @Test func homeTilesOpenEachDestination() async {
@@ -196,6 +196,6 @@ struct AppFeatureTests {
     private static func returningUser() -> AppFeature.State {
         @Shared(.hasSeenOnboarding) var hasSeenOnboarding
         $hasSeenOnboarding.withLock { $0 = true }
-        return AppFeature.State()
+        return .launch()
     }
 }
