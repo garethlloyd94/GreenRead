@@ -21,14 +21,24 @@ jobs:
 
   kit:
     name: GreenReadKit (iOS Simulator)
-    runs-on: macos-15
+    # The packages (sqlite-data, swift-collections) need Swift 6.2+, i.e. Xcode 26 or later.
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Pick a simulator
+        run: |
+          xcodebuild -version
+          SIMULATOR=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+ Pro' || xcrun simctl list devices available | grep -m1 -oE 'iPhone [^(]+[^ (]')
+          echo "Using $SIMULATOR"
+          echo "SIMULATOR=$SIMULATOR" >> "$GITHUB_ENV"
       - name: Test
         working-directory: Packages/GreenReadKit
         run: |
           xcodebuild test \
             -scheme GreenReadKit-Package \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination "platform=iOS Simulator,name=$SIMULATOR" \
             -skipMacroValidation \
             -skipPackagePluginValidation
