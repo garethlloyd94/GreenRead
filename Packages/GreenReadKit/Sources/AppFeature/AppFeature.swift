@@ -54,8 +54,8 @@ public struct AppFeature {
 
             case let .home(.delegate(delegate)):
                 switch delegate {
-                case let .openPlayer(videoID):
-                    state.path.append(.player(PlayerFeature.State(videoID: videoID)))
+                case let .openPlayer(drill, upNext):
+                    state.path.append(.player(PlayerFeature.State(drill: drill, upNext: upNext)))
                 case .openQuickRead:
                     state.destination = .tool(.quickRead)
                 case .openScan:
@@ -170,6 +170,13 @@ extension AppFeature.State {
         case "scan": destination = .tool(.scan)
         case "settings": destination = .settings(SettingsFeature.State())
         case "stats": path.append(.stats(StatsFeature.State()))
+        case "drills": home.segment = .drills
+        case "player":
+            @Dependency(DrillCatalogClient.self) var catalog
+            let drills = (try? catalog.load()) ?? []
+            if let first = drills.first {
+                path.append(.player(PlayerFeature.State(drill: first, upNext: Array(drills.dropFirst()))))
+            }
         case "quickRead.train", "train.guess", "train.reveal", "train.summary":
             var train = TrainFlow.State()
             let sample = TrainFlow.debugSamples

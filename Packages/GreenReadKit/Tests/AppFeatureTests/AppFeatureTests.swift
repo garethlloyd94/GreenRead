@@ -172,14 +172,20 @@ struct AppFeatureTests {
     }
 
     @Test func drillOpensPlayerAndPlayerOpensTempo() async {
-        let store = TestStore(initialState: Self.returningUser()) {
+        let drills = [
+            Drill(id: "a", title: "A", creator: "C", category: .tempo, duration: "1:00"),
+            Drill(id: "b", title: "B", creator: "C", category: .alignment, duration: "2:00"),
+        ]
+        var state = Self.returningUser()
+        state.home.drills.drills = drills
+        let store = TestStore(initialState: state) {
             AppFeature()
         }
 
-        await store.send(\.home.drills.videoTapped, "placeholder-1")
+        await store.send(\.home.drills.videoTapped, "a")
         await store.receive(\.home.drills.delegate.openPlayer)
         await store.receive(\.home.delegate.openPlayer) {
-            $0.path[id: 0] = .player(PlayerFeature.State(videoID: "placeholder-1"))
+            $0.path[id: 0] = .player(PlayerFeature.State(drill: drills[0], upNext: [drills[1]]))
         }
         await store.send(\.path[id: 0].player.startTempoButtonTapped) {
             $0.path[id: 0, case: \.player]?.tempo = TempoFeature.State()
