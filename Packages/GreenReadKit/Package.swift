@@ -8,6 +8,7 @@ let package = Package(
     ],
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
+        .library(name: "Clients", targets: ["Clients"]),
         .library(name: "DesignSystem", targets: ["DesignSystem"]),
         .library(name: "Models", targets: ["Models"]),
     ],
@@ -55,6 +56,8 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "Models",
+                "QuickReadFeature",
+                .product(name: "GreenReadCore", package: "GreenReadCore"),
                 "DrillsFeature",
                 "HomeFeature",
                 "OnboardingFeature",
@@ -97,6 +100,8 @@ let package = Package(
                 "Clients",
                 "DesignSystem",
                 "Models",
+                .product(name: "GreenReadCore", package: "GreenReadCore"),
+                .product(name: "SQLiteData", package: "sqlite-data"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
@@ -152,6 +157,13 @@ let package = Package(
             name: "AppFeatureTests",
             dependencies: [
                 "AppFeature",
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "QuickReadFeatureTests",
+            dependencies: [
+                "QuickReadFeature",
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
             ]
         ),

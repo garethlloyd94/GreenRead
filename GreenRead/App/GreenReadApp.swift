@@ -1,4 +1,5 @@
 import AppFeature
+import Clients
 import ComposableArchitecture
 import DesignSystem
 import Models
@@ -13,6 +14,11 @@ struct GreenReadApp: App {
     init() {
         prepareDependencies {
             try! $0.bootstrapDatabase()
+            #if DEBUG && targetEnvironment(simulator)
+            // The Simulator has no motion sensors: script a phone being laid on a green.
+            $0[MotionClient.self] = .previewValue
+            $0[PedometerClient.self] = .previewValue
+            #endif
         }
         GRFont.registerBundledFonts()
     }
@@ -24,7 +30,7 @@ struct GreenReadApp: App {
         }
     }
 
-    /// In debug builds, `-screen settings|tempo|quickRead|scan|stats` opens that screen at launch,
+    /// In debug builds, `-screen <name>` opens a screen at launch (see `openForDebugging`),
     /// for checking layouts in the Simulator.
     private static func initialState() -> AppFeature.State {
         var state = AppFeature.State()

@@ -10,6 +10,7 @@
 		A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000011 /* AppFeature */; };
 		A1B2C3D4E5F6000000000014 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000015 /* Models */; };
 		A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000017 /* DesignSystem */; };
+		A1B2C3D4E5F6000000000019 /* Clients in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F600000000001A /* Clients */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F6000000000010 /* AppFeature in Frameworks */,
+				A1B2C3D4E5F6000000000019 /* Clients in Frameworks */,
 				A1B2C3D4E5F6000000000016 /* DesignSystem in Frameworks */,
 				A1B2C3D4E5F6000000000014 /* Models in Frameworks */,
 			);
@@ -79,6 +81,7 @@
 			name = GreenRead;
 			packageProductDependencies = (
 				A1B2C3D4E5F6000000000011 /* AppFeature */,
+				A1B2C3D4E5F600000000001A /* Clients */,
 				A1B2C3D4E5F6000000000017 /* DesignSystem */,
 				A1B2C3D4E5F6000000000015 /* Models */,
 			);
@@ -367,6 +370,10 @@
 		A1B2C3D4E5F6000000000015 /* Models */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Models;
+		};
+		A1B2C3D4E5F600000000001A /* Clients */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Clients;
 		};
 		A1B2C3D4E5F6000000000017 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

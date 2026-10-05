@@ -3,7 +3,9 @@ import DesignSystem
 import DrillsFeature
 import HomeFeature
 import Models
+import GreenReadCore
 import OnboardingFeature
+import QuickReadFeature
 import SettingsFeature
 import StatsFeature
 import SwiftUI
@@ -145,6 +147,19 @@ extension AppFeature.State {
     public mutating func openForDebugging(_ screen: String) {
         switch screen {
         case "quickRead": destination = .tool(.quickRead)
+        case "quickRead.layFlat", "quickRead.result":
+            var read = ReadFlow.State()
+            read.feet = 15
+            read.step = screen == "quickRead.layFlat"
+                ? .layFlat(LayFlat.State())
+                : .result(ReadResult.State(
+                    feet: 15,
+                    reading: SlopeReading(uphillPercent: 1.2, sidePercent: 2.1),
+                    speed: .medium
+                ))
+            var quickRead = QuickReadFeature.State(mode: .read(read))
+            quickRead.hasCheckedPermission = true
+            destination = .tool(ToolFeature.State(tool: .quickRead(quickRead)))
         case "scan": destination = .tool(.scan)
         case "settings": destination = .settings(SettingsFeature.State())
         case "stats": path.append(.stats(StatsFeature.State()))
