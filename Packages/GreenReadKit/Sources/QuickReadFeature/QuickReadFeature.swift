@@ -16,6 +16,23 @@ public struct QuickReadFeature {
             self.mode = mode
         }
 
+        /// True over the camera and the lay-flat colours, false over chalk screens.
+        public var isOverDarkBackground: Bool {
+            guard hasCheckedPermission, primer == nil else { return false }
+            switch mode {
+            case let .read(read):
+                switch read.step {
+                case .measure, .layFlat: return true
+                case .result: return false
+                }
+            case let .train(train):
+                switch train.step {
+                case .measure, .layFlat: return true
+                case .guess, .reveal, .summary: return false
+                }
+            }
+        }
+
         public var modeKind: ModeKind {
             switch mode {
             case .read: .read
@@ -129,7 +146,7 @@ public struct QuickReadView: View {
                     PillSegmentedControl(
                         options: QuickReadFeature.ModeKind.allCases,
                         selection: $store.modeKind.sending(\.modeChanged),
-                        style: .onCamera
+                        style: store.isOverDarkBackground ? .onCamera : .light
                     ) { $0.rawValue }
                     .frame(width: 220)
                     .padding(.top, 60)

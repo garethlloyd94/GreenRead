@@ -391,4 +391,4 @@ iPad, landscape, Apple Watch, Tempo backswing drill and practice session (10/11,
 
 ---
 
-**Status:** M0 + M1 merged. Next: M1.5 (architecture foundation), revision 4 approved.
+**Status:** M0–M1 merged; M1.5–M8 in review as stacked PRs #3–#10. Release checklist: [`docs/RELEASE.md`](RELEASE.md).

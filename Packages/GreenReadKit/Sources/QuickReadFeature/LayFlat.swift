@@ -2,6 +2,7 @@ import Clients
 import ComposableArchitecture
 import DesignSystem
 import GreenReadCore
+import Models
 import SwiftUI
 
 /// Lay flat: orange until the phone is flat and still, then green while it reads.
@@ -14,6 +15,7 @@ public struct LayFlat {
         public var phase: SlopeReader.Phase = .notFlat(live: SlopeReading(uphillPercent: 0, sidePercent: 0))
         /// Train mode hides the live numbers ("no peeking").
         public var hidesNumbers: Bool
+        @SharedReader(.appSettings) public var settings
 
         public init(hidesNumbers: Bool = false) {
             self.hidesNumbers = hidesNumbers
@@ -140,6 +142,9 @@ struct LayFlatView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background((store.isGreen ? GRColor.green : GRColor.clay).ignoresSafeArea())
         .animation(GRMotion.stateColour, value: store.isGreen)
+        .sensoryFeedback(.impact(weight: .light), trigger: store.isGreen) { _, isGreen in
+            isGreen && store.settings.hapticsOn
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(title)
         .task { await store.send(.task).finish() }

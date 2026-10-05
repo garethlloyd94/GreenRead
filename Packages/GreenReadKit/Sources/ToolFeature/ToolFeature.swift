@@ -19,6 +19,19 @@ public struct ToolFeature {
         public static var quickRead: Self { Self(tool: .quickRead(QuickReadFeature.State())) }
         public static var scan: Self { Self(tool: .scan(ScanFlow.State())) }
 
+        /// Light status-bar text over the camera and the lay-flat colours; dark over chalk.
+        public var usesLightStatusBar: Bool {
+            switch tool {
+            case let .quickRead(quickRead):
+                return quickRead.isOverDarkBackground
+            case let .scan(scan):
+                switch scan.step {
+                case .checking, .mark, .scanning, .poorScan, .result: return true
+                case .noLiDAR, .cameraPrimer: return false
+                }
+            }
+        }
+
         public var toolKind: ToolKind {
             switch tool {
             case .quickRead: .quickRead
@@ -108,6 +121,7 @@ public struct ToolView: View {
                 .padding(.top, 4)
         }
         .background(GRColor.ink.ignoresSafeArea())
+        .preferredColorScheme(store.usesLightStatusBar ? .dark : .light)
     }
 
     /// ✕ on the left, the tool-name pill (Scan ↔ Quick Read) in the centre.
