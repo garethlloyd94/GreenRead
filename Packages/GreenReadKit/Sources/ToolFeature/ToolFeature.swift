@@ -102,9 +102,6 @@ public struct ToolView: View {
                 QuickReadView(store: quickReadStore)
             case let .scan(scanStore):
                 ScanView(store: scanStore)
-                    .padding(GRMetrics.screenPadding)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(GRColor.turfDark.ignoresSafeArea())
             }
             chrome
                 .padding(.horizontal, GRMetrics.screenPadding)
