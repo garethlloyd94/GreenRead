@@ -17,6 +17,24 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public static let paceLengthRange: ClosedRange<Double> = 2.0...3.5
 
     public init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case distanceUnit, aimUnit, defaultSpeed, paceLengthFeet, hapticsOn, soundsOn
+    }
+
+    /// Missing or unreadable fields fall back to their defaults instead of failing the whole file,
+    /// so adding a setting later doesn't reset everyone's settings. Pace length is clamped.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = AppSettings()
+        distanceUnit = (try? container.decodeIfPresent(DistanceUnit.self, forKey: .distanceUnit)) ?? defaults.distanceUnit
+        aimUnit = (try? container.decodeIfPresent(AimUnit.self, forKey: .aimUnit)) ?? defaults.aimUnit
+        defaultSpeed = (try? container.decodeIfPresent(GreenSpeed.self, forKey: .defaultSpeed)) ?? defaults.defaultSpeed
+        let paceLength = (try? container.decodeIfPresent(Double.self, forKey: .paceLengthFeet)) ?? defaults.paceLengthFeet
+        paceLengthFeet = min(max(paceLength, Self.paceLengthRange.lowerBound), Self.paceLengthRange.upperBound)
+        hapticsOn = (try? container.decodeIfPresent(Bool.self, forKey: .hapticsOn)) ?? defaults.hapticsOn
+        soundsOn = (try? container.decodeIfPresent(Bool.self, forKey: .soundsOn)) ?? defaults.soundsOn
+    }
 }
 
 public enum Tempo {
