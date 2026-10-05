@@ -15,8 +15,6 @@
 
 /* Begin PBXFileReference section */
 		A1B2C3D4E5F6000000000001 /* GreenRead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GreenRead.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1B2C3D4E5F6000000000013 /* GreenReadCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadCore; path = Packages/GreenReadCore; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000000000018 /* GreenReadKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GreenReadKit; path = Packages/GreenReadKit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,8 +57,6 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6000000000002 /* GreenRead */,
-				A1B2C3D4E5F6000000000013 /* GreenReadCore */,
-				A1B2C3D4E5F6000000000018 /* GreenReadKit */,
 				A1B2C3D4E5F6000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
