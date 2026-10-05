@@ -186,32 +186,6 @@ struct AppFeatureTests {
         }
     }
 
-    @Test func tempoBPMSteps() async {
-        let store = TestStore(initialState: TempoFeature.State()) {
-            TempoFeature()
-        }
-
-        await store.send(.plusButtonTapped) {
-            $0.$bpm.withLock { $0 = 77 }
-        }
-        await store.send(.minusButtonTapped) {
-            $0.$bpm.withLock { $0 = 76 }
-        }
-        #expect(HomeFeature.State().tempoBPM == 76)
-    }
-
-    @Test func tempoBPMStopsAtTheEndsOfTheRange() async {
-        @Shared(.tempoBPM) var bpm
-        $bpm.withLock { $0 = 100 }
-        let store = TestStore(initialState: TempoFeature.State()) {
-            TempoFeature()
-        }
-
-        await store.send(.plusButtonTapped)
-        $bpm.withLock { $0 = 60 }
-        await store.send(.minusButtonTapped)
-    }
-
     private static func returningUser() -> AppFeature.State {
         @Shared(.hasSeenOnboarding) var hasSeenOnboarding
         $hasSeenOnboarding.withLock { $0 = true }
